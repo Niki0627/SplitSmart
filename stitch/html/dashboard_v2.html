@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SplitSmart - Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#24d1c6",
+                        "background-light": "#f6f8f8",
+                        "background-dark": "#12201f",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen flex flex-col font-display">
+<!-- Header Section -->
+<header class="sticky top-0 z-20 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-slate-200 dark:border-primary/10 px-4 py-4">
+<div class="flex items-center justify-between max-w-2xl mx-auto w-full">
+<div class="flex items-center gap-3">
+<div class="size-12 rounded-full border-2 border-primary p-0.5">
+<img alt="User Profile" class="rounded-full size-full object-cover" data-alt="Professional male portrait for profile avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCyeNnSIQd0tHDfGKs51U-wnSRA3Fj_WmLWamfBCLAp4Qnfm5-M6vBir80x2BiQMWJV-hU7zeeDrPiT4x6pMG_AMHiAVZ7E_HyONYlxrbuJXmYDIYacprZh_A6UWRULoZZnfyD9tJenGOOLXlJYc21ZIX8m63KuxNPuIGUTj65ksLipVdXfcIb1EegiRct1JsDCzPQKdY4TDh5suf2ea3QIaHwyc1XLy9AM0LQGxYYG2tiYHggjS0w6JMQOuERpHjS2bKhi7Jp8tnrW"/>
+</div>
+<div>
+<p class="text-xs text-slate-500 dark:text-primary/70 font-medium">Good morning,</p>
+<h1 class="text-lg font-bold leading-tight">Alex Rivera</h1>
+</div>
+</div>
+<button class="relative p-2 rounded-full hover:bg-slate-100 dark:hover:bg-primary/10 transition-colors">
+<span class="material-symbols-outlined text-slate-600 dark:text-slate-300">notifications</span>
+<span class="absolute top-2 right-2 size-2 bg-red-500 rounded-full border-2 border-background-light dark:border-background-dark"></span>
+</button>
+</div>
+</header>
+<main class="flex-1 overflow-y-auto px-4 py-6 max-w-2xl mx-auto w-full pb-24">
+<!-- Summary Card -->
+<section class="mb-8">
+<div class="bg-gradient-to-br from-primary to-teal-600 rounded-xl p-6 shadow-lg shadow-primary/20 text-white">
+<div class="flex justify-between items-start mb-4">
+<p class="text-sm font-medium opacity-90">Total Balance</p>
+<span class="material-symbols-outlined opacity-80">account_balance_wallet</span>
+</div>
+<div class="flex items-baseline gap-1">
+<h2 class="text-3xl font-bold">$1,450.20</h2>
+<span class="text-xs bg-white/20 px-2 py-1 rounded-full">+12.5%</span>
+</div>
+<div class="mt-6 grid grid-cols-2 gap-4 border-t border-white/10 pt-4">
+<div>
+<p class="text-[10px] uppercase tracking-wider opacity-70">You are owed</p>
+<p class="text-lg font-semibold">$1,820.00</p>
+</div>
+<div class="text-right">
+<p class="text-[10px] uppercase tracking-wider opacity-70">You owe</p>
+<p class="text-lg font-semibold">$369.80</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Groups Section -->
+<section>
+<div class="flex items-center justify-between mb-4">
+<h2 class="text-xl font-bold tracking-tight">Your Groups</h2>
+<button class="text-primary text-sm font-semibold flex items-center gap-1">
+                    See All <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+<div class="space-y-4">
+<!-- Group Card 1: You Get (Green) -->
+<div class="group bg-white dark:bg-slate-800/40 border border-slate-100 dark:border-primary/5 rounded-xl p-4 flex items-center gap-4 transition-all hover:shadow-md hover:border-primary/20 cursor-pointer">
+<div class="size-14 shrink-0 rounded-lg bg-emerald-100 dark:bg-emerald-500/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-emerald-600 dark:text-emerald-400 text-3xl">downhill_skiing</span>
+</div>
+<div class="flex-1 min-w-0">
+<h3 class="font-bold text-slate-900 dark:text-white truncate">Ski Trip 2024</h3>
+<p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Total: $1,200.00</p>
+</div>
+<div class="text-right shrink-0">
+<p class="text-[10px] font-bold uppercase text-emerald-600 dark:text-emerald-400 tracking-wider">You get</p>
+<p class="text-lg font-bold text-emerald-600 dark:text-emerald-400">$45.00</p>
+</div>
+</div>
+<!-- Group Card 2: You Owe (Red) -->
+<div class="group bg-white dark:bg-slate-800/40 border border-slate-100 dark:border-primary/5 rounded-xl p-4 flex items-center gap-4 transition-all hover:shadow-md hover:border-primary/20 cursor-pointer">
+<div class="size-14 shrink-0 rounded-lg bg-rose-100 dark:bg-rose-500/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-rose-600 dark:text-rose-400 text-3xl">lightbulb</span>
+</div>
+<div class="flex-1 min-w-0">
+<h3 class="font-bold text-slate-900 dark:text-white truncate">Apartment Utilities</h3>
+<p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Total: $240.50</p>
+</div>
+<div class="text-right shrink-0">
+<p class="text-[10px] font-bold uppercase text-rose-500 dark:text-rose-400 tracking-wider">You owe</p>
+<p class="text-lg font-bold text-rose-500 dark:text-rose-400">$120.00</p>
+</div>
+</div>
+<!-- Group Card 3: Settled (Gray) -->
+<div class="group bg-white dark:bg-slate-800/40 border border-slate-100 dark:border-primary/5 rounded-xl p-4 flex items-center gap-4 transition-all hover:shadow-md hover:border-primary/20 cursor-pointer">
+<div class="size-14 shrink-0 rounded-lg bg-slate-100 dark:bg-slate-700/50 flex items-center justify-center">
+<span class="material-symbols-outlined text-slate-500 dark:text-slate-400 text-3xl">restaurant</span>
+</div>
+<div class="flex-1 min-w-0">
+<h3 class="font-bold text-slate-900 dark:text-white truncate">Dinner Party</h3>
+<p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Total: $85.00</p>
+</div>
+<div class="text-right shrink-0">
+<p class="text-[10px] font-bold uppercase text-slate-400 dark:text-slate-500 tracking-wider">Settled</p>
+<p class="text-lg font-bold text-slate-400 dark:text-slate-500">$0.00</p>
+</div>
+</div>
+<!-- Group Card 4: Another "You Get" -->
+<div class="group bg-white dark:bg-slate-800/40 border border-slate-100 dark:border-primary/5 rounded-xl p-4 flex items-center gap-4 transition-all hover:shadow-md hover:border-primary/20 cursor-pointer">
+<div class="size-14 shrink-0 rounded-lg bg-emerald-100 dark:bg-emerald-500/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-emerald-600 dark:text-emerald-400 text-3xl">flight</span>
+</div>
+<div class="flex-1 min-w-0">
+<h3 class="font-bold text-slate-900 dark:text-white truncate">Weekend in Vegas</h3>
+<p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Total: $2,450.00</p>
+</div>
+<div class="text-right shrink-0">
+<p class="text-[10px] font-bold uppercase text-emerald-600 dark:text-emerald-400 tracking-wider">You get</p>
+<p class="text-lg font-bold text-emerald-600 dark:text-emerald-400">$312.40</p>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Floating Action Button -->
+<button class="fixed bottom-24 right-6 size-16 bg-primary text-background-dark rounded-full shadow-2xl shadow-primary/40 flex items-center justify-center transition-transform active:scale-95 z-40">
+<span class="material-symbols-outlined text-3xl font-bold">add</span>
+</button>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 left-0 right-0 bg-white/90 dark:bg-slate-900/90 backdrop-blur-lg border-t border-slate-200 dark:border-slate-800 px-6 pb-6 pt-3 z-30">
+<div class="flex justify-between items-center max-w-md mx-auto">
+<a class="flex flex-col items-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined fill-1">home</span>
+<span class="text-[10px] font-bold">Home</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">history</span>
+<span class="text-[10px] font-medium">Activity</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="text-[10px] font-medium">Friends</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-[10px] font-medium">Settings</span>
+</a>
+</div>
+</nav>
+</body></html>

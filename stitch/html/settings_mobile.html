@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SplitSmart Settings</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#24d1c6",
+                        "background-light": "#f6f8f8",
+                        "background-dark": "#12201f",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen flex flex-col">
+<div class="relative flex h-full w-full max-w-md mx-auto flex-col bg-background-light dark:bg-background-dark shadow-2xl min-h-screen">
+<!-- Header -->
+<div class="flex items-center p-4 pt-6 justify-between sticky top-0 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md z-10">
+<div class="text-slate-900 dark:text-slate-100 flex size-10 shrink-0 items-center justify-center cursor-pointer hover:bg-slate-200 dark:hover:bg-primary/20 rounded-full transition-colors">
+<span class="material-symbols-outlined">arrow_back</span>
+</div>
+<h2 class="text-slate-900 dark:text-slate-100 text-lg font-bold leading-tight tracking-tight flex-1 text-center pr-10">Settings</h2>
+</div>
+<div class="flex-1 overflow-y-auto pb-24">
+<!-- Profile Section -->
+<div class="p-4">
+<div class="bg-white dark:bg-primary/5 rounded-xl p-6 border border-slate-200 dark:border-primary/10 flex flex-col items-center gap-4 text-center">
+<div class="relative">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full h-24 w-24 border-4 border-primary/20" data-alt="Professional male portrait for user profile avatar" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDN-X_bhwqLgjwKAHFixC4klsyQljyXDFggyI_I1WGm2SroSy_sMb-3hdZP9CzQCZ8MkCpkcIhuSD7Lqaw8aUh_AuCscp7B0BuYm9DzEuQ6pc6A70AjoHX3OPfL3yAD-nomtY2AgMmPIcThlxVApTd1-HzyNo3JWhx8WtTKST-UlhIZM672vYrSE2Iz7msFJfgkjqlUeuc862fnqXNlu-fcPZ734GmIq-PQatd1-zs4IuZbZt27ekjO2Mam6EtLK9OIMgm9zfUBpwNx");'>
+</div>
+<button class="absolute bottom-0 right-0 bg-primary text-background-dark p-1.5 rounded-full border-2 border-background-dark flex items-center justify-center shadow-lg">
+<span class="material-symbols-outlined text-sm">edit</span>
+</button>
+</div>
+<div>
+<p class="text-slate-900 dark:text-slate-100 text-xl font-bold tracking-tight">Alex Johnson</p>
+<p class="text-slate-500 dark:text-primary/60 text-sm">+91 98765 43210</p>
+</div>
+</div>
+</div>
+<!-- Preferences Group -->
+<div class="px-4 py-2">
+<h3 class="text-slate-500 dark:text-primary/70 text-xs font-bold uppercase tracking-wider px-2 mb-3">App Preferences</h3>
+<div class="space-y-1 bg-white dark:bg-primary/5 rounded-xl border border-slate-200 dark:border-primary/10 overflow-hidden">
+<!-- Notification Toggle -->
+<div class="flex items-center gap-4 px-4 min-h-[60px] justify-between hover:bg-slate-50 dark:hover:bg-primary/10 transition-colors">
+<div class="flex items-center gap-4">
+<div class="text-primary flex items-center justify-center rounded-lg bg-primary/10 shrink-0 size-10">
+<span class="material-symbols-outlined">notifications</span>
+</div>
+<p class="text-slate-900 dark:text-slate-100 text-base font-medium">Push Notifications</p>
+</div>
+<div class="shrink-0">
+<label class="relative flex h-[28px] w-[48px] cursor-pointer items-center rounded-full border-none bg-slate-300 dark:bg-slate-700 p-1 transition-colors has-[:checked]:bg-primary">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="h-5 w-5 rounded-full bg-white shadow-sm transition-transform peer-checked:translate-x-[20px]"></div>
+</label>
+</div>
+</div>
+<div class="h-px bg-slate-100 dark:bg-primary/10 mx-4"></div>
+<!-- Dark Mode Toggle -->
+<div class="flex items-center gap-4 px-4 min-h-[60px] justify-between hover:bg-slate-50 dark:hover:bg-primary/10 transition-colors">
+<div class="flex items-center gap-4">
+<div class="text-primary flex items-center justify-center rounded-lg bg-primary/10 shrink-0 size-10">
+<span class="material-symbols-outlined">dark_mode</span>
+</div>
+<p class="text-slate-900 dark:text-slate-100 text-base font-medium">Dark Mode</p>
+</div>
+<div class="shrink-0">
+<label class="relative flex h-[28px] w-[48px] cursor-pointer items-center rounded-full border-none bg-slate-300 dark:bg-slate-700 p-1 transition-colors has-[:checked]:bg-primary">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="h-5 w-5 rounded-full bg-white shadow-sm transition-transform peer-checked:translate-x-[20px]"></div>
+</label>
+</div>
+</div>
+<div class="h-px bg-slate-100 dark:bg-primary/10 mx-4"></div>
+<!-- Reminder Frequency -->
+<div class="flex items-center gap-4 px-4 min-h-[60px] justify-between hover:bg-slate-50 dark:hover:bg-primary/10 transition-colors cursor-pointer">
+<div class="flex items-center gap-4">
+<div class="text-primary flex items-center justify-center rounded-lg bg-primary/10 shrink-0 size-10">
+<span class="material-symbols-outlined">event_repeat</span>
+</div>
+<div class="flex flex-col">
+<p class="text-slate-900 dark:text-slate-100 text-base font-medium">Reminder Frequency</p>
+<p class="text-slate-500 dark:text-primary/40 text-xs">Send settle-up nudges</p>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-primary text-sm font-semibold">Weekly</span>
+<span class="material-symbols-outlined text-slate-400 text-lg">chevron_right</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Data Management Group -->
+<div class="px-4 py-4">
+<h3 class="text-slate-500 dark:text-primary/70 text-xs font-bold uppercase tracking-wider px-2 mb-3">Data Management</h3>
+<div class="bg-white dark:bg-primary/5 rounded-xl p-4 border border-slate-200 dark:border-primary/10">
+<p class="text-slate-500 dark:text-slate-400 text-sm mb-4 px-1">Export your spending history and group balances for external accounting.</p>
+<div class="grid grid-cols-2 gap-3">
+<button class="flex flex-col items-center justify-center gap-2 p-4 rounded-lg bg-slate-50 dark:bg-primary/10 border border-slate-200 dark:border-primary/20 hover:border-primary transition-all group">
+<span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform">picture_as_pdf</span>
+<span class="text-slate-900 dark:text-slate-100 text-sm font-semibold">Export PDF</span>
+</button>
+<button class="flex flex-col items-center justify-center gap-2 p-4 rounded-lg bg-slate-50 dark:bg-primary/10 border border-slate-200 dark:border-primary/20 hover:border-primary transition-all group">
+<span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform">table_view</span>
+<span class="text-slate-900 dark:text-slate-100 text-sm font-semibold">Export Excel</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Account Group -->
+<div class="px-4 py-2 mb-8">
+<div class="bg-white dark:bg-primary/5 rounded-xl border border-slate-200 dark:border-primary/10 overflow-hidden">
+<button class="w-full flex items-center gap-4 px-4 min-h-[60px] hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors group">
+<div class="text-red-500 flex items-center justify-center rounded-lg bg-red-100 dark:bg-red-900/20 shrink-0 size-10">
+<span class="material-symbols-outlined">logout</span>
+</div>
+<p class="text-red-500 text-base font-semibold">Sign Out</p>
+</button>
+</div>
+<p class="text-center text-slate-400 dark:text-primary/30 text-[10px] mt-6 font-medium">SplitSmart v2.4.1 (Build 402)</p>
+</div>
+</div>
+<!-- Bottom Navigation Bar -->
+<div class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md bg-white dark:bg-background-dark border-t border-slate-200 dark:border-primary/20 px-4 pb-6 pt-2 flex justify-between items-center z-20">
+<a class="flex flex-1 flex-col items-center gap-1 text-slate-400 dark:text-primary/40" href="#">
+<span class="material-symbols-outlined">home</span>
+<p class="text-[10px] font-bold">Home</p>
+</a>
+<a class="flex flex-1 flex-col items-center gap-1 text-slate-400 dark:text-primary/40" href="#">
+<span class="material-symbols-outlined">receipt_long</span>
+<p class="text-[10px] font-bold">Expenses</p>
+</a>
+<a class="flex flex-1 flex-col items-center gap-1 text-slate-400 dark:text-primary/40" href="#">
+<span class="material-symbols-outlined">group</span>
+<p class="text-[10px] font-bold">Groups</p>
+</a>
+<a class="flex flex-1 flex-col items-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">settings</span>
+<p class="text-[10px] font-bold">Settings</p>
+</a>
+</div>
+</div>
+</body></html>

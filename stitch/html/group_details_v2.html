@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SplitSmart - Group Details</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#24d1c6",
+                        "background-light": "#f6f8f8",
+                        "background-dark": "#12201f",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 antialiased font-display">
+<div class="relative flex h-screen w-full flex-col overflow-hidden max-w-md mx-auto border-x border-slate-200 dark:border-primary/10 shadow-2xl bg-background-light dark:bg-background-dark">
+<!-- Header Nav -->
+<header class="flex items-center justify-between px-4 pt-6 pb-2 shrink-0">
+<button class="flex h-10 w-10 items-center justify-center rounded-full hover:bg-slate-200 dark:hover:bg-primary/10 transition-colors">
+<span class="material-symbols-outlined text-slate-900 dark:text-slate-100">arrow_back</span>
+</button>
+<h1 class="text-lg font-bold tracking-tight">Europe Trip 2024</h1>
+<button class="flex h-10 w-10 items-center justify-center rounded-full hover:bg-slate-200 dark:hover:bg-primary/10 transition-colors">
+<span class="material-symbols-outlined text-slate-900 dark:text-slate-100">more_vert</span>
+</button>
+</header>
+<!-- Summary Section -->
+<div class="px-4 py-4 shrink-0">
+<div class="rounded-xl bg-primary/10 dark:bg-primary/5 border border-primary/20 p-5 space-y-4">
+<div class="flex justify-between items-start">
+<div>
+<p class="text-sm text-slate-500 dark:text-primary/60 font-medium">Total Group Spending</p>
+<h2 class="text-3xl font-bold mt-1">$1,240.00</h2>
+</div>
+<div class="text-right">
+<p class="text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-primary/60">Your Balance</p>
+<p class="text-lg font-bold text-primary mt-1">+$150.00</p>
+</div>
+</div>
+<button class="w-full bg-primary hover:bg-primary/90 text-background-dark font-bold py-3.5 rounded-lg flex items-center justify-center gap-2 transition-all shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-[20px]">account_balance_wallet</span>
+                    Calculate Settlement
+                </button>
+</div>
+</div>
+<!-- Expenses Section -->
+<div class="flex-1 flex flex-col min-h-0 bg-slate-50 dark:bg-background-dark/50 rounded-t-xl mt-2 border-t border-slate-200 dark:border-primary/10">
+<div class="flex items-center justify-between px-6 py-5 shrink-0">
+<h3 class="text-base font-bold">Recent Expenses</h3>
+<button class="text-sm font-semibold text-primary">View All</button>
+</div>
+<!-- Scrollable List -->
+<div class="flex-1 overflow-y-auto px-4 pb-24 space-y-3 hide-scrollbar">
+<!-- Expense Card 1 -->
+<div class="flex items-center gap-4 bg-white dark:bg-primary/10 p-4 rounded-xl shadow-sm border border-slate-100 dark:border-primary/5">
+<div class="h-12 w-12 rounded-lg bg-primary/20 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary">restaurant</span>
+</div>
+<div class="flex-1 min-w-0">
+<h4 class="font-semibold text-slate-900 dark:text-slate-100 truncate">Dinner at Luigi's</h4>
+<p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Paid by Alex • Oct 12</p>
+</div>
+<div class="text-right">
+<p class="font-bold text-slate-900 dark:text-slate-100">$84.00</p>
+<p class="text-[10px] font-medium text-slate-400 dark:text-primary/50 uppercase tracking-tighter">Split Equally</p>
+</div>
+</div>
+<!-- Expense Card 2 -->
+<div class="flex items-center gap-4 bg-white dark:bg-primary/10 p-4 rounded-xl shadow-sm border border-slate-100 dark:border-primary/5">
+<div class="h-12 w-12 rounded-lg bg-primary/20 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary">hotel</span>
+</div>
+<div class="flex-1 min-w-0">
+<h4 class="font-semibold text-slate-900 dark:text-slate-100 truncate">Hotel Deposit</h4>
+<p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Paid by You • Oct 10</p>
+</div>
+<div class="text-right">
+<p class="font-bold text-slate-900 dark:text-slate-100">$450.00</p>
+<p class="text-[10px] font-medium text-slate-400 dark:text-primary/50 uppercase tracking-tighter">Split by %</p>
+</div>
+</div>
+<!-- Expense Card 3 -->
+<div class="flex items-center gap-4 bg-white dark:bg-primary/10 p-4 rounded-xl shadow-sm border border-slate-100 dark:border-primary/5">
+<div class="h-12 w-12 rounded-lg bg-primary/20 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary">directions_bus</span>
+</div>
+<div class="flex-1 min-w-0">
+<h4 class="font-semibold text-slate-900 dark:text-slate-100 truncate">Airport Shuttle</h4>
+<p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Paid by Sarah • Oct 09</p>
+</div>
+<div class="text-right">
+<p class="font-bold text-slate-900 dark:text-slate-100">$42.50</p>
+<p class="text-[10px] font-medium text-slate-400 dark:text-primary/50 uppercase tracking-tighter">Split Equally</p>
+</div>
+</div>
+<!-- Expense Card 4 -->
+<div class="flex items-center gap-4 bg-white dark:bg-primary/10 p-4 rounded-xl shadow-sm border border-slate-100 dark:border-primary/5">
+<div class="h-12 w-12 rounded-lg bg-primary/20 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary">local_bar</span>
+</div>
+<div class="flex-1 min-w-0">
+<h4 class="font-semibold text-slate-900 dark:text-slate-100 truncate">Rooftop Cocktails</h4>
+<p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Paid by You • Oct 08</p>
+</div>
+<div class="text-right">
+<p class="font-bold text-slate-900 dark:text-slate-100">$120.00</p>
+<p class="text-[10px] font-medium text-slate-400 dark:text-primary/50 uppercase tracking-tighter">Split Equally</p>
+</div>
+</div>
+<!-- Expense Card 5 -->
+<div class="flex items-center gap-4 bg-white dark:bg-primary/10 p-4 rounded-xl shadow-sm border border-slate-100 dark:border-primary/5">
+<div class="h-12 w-12 rounded-lg bg-primary/20 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary">museum</span>
+</div>
+<div class="flex-1 min-w-0">
+<h4 class="font-semibold text-slate-900 dark:text-slate-100 truncate">Louvre Tickets</h4>
+<p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Paid by Alex • Oct 07</p>
+</div>
+<div class="text-right">
+<p class="font-bold text-slate-900 dark:text-slate-100">$65.00</p>
+<p class="text-[10px] font-medium text-slate-400 dark:text-primary/50 uppercase tracking-tighter">Fixed Split</p>
+</div>
+</div>
+</div>
+</div>
+<!-- FAB -->
+<div class="absolute bottom-24 right-6">
+<button class="h-14 w-14 rounded-full bg-primary text-background-dark shadow-xl shadow-primary/30 flex items-center justify-center transition-transform hover:scale-110 active:scale-95">
+<span class="material-symbols-outlined font-bold text-3xl">add</span>
+</button>
+</div>
+<!-- Bottom Navbar -->
+<nav class="absolute bottom-0 w-full bg-white dark:bg-background-dark border-t border-slate-200 dark:border-primary/20 px-6 py-3 flex items-center justify-between shrink-0">
+<a class="flex flex-col items-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined fill-[1]">groups</span>
+<span class="text-[10px] font-bold">Groups</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500" href="#">
+<span class="material-symbols-outlined">receipt_long</span>
+<span class="text-[10px] font-medium">Expenses</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500" href="#">
+<span class="material-symbols-outlined">person_add</span>
+<span class="text-[10px] font-medium">Friends</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500" href="#">
+<span class="material-symbols-outlined">account_circle</span>
+<span class="text-[10px] font-medium">Profile</span>
+</a>
+</nav>
+</div>
+</body></html>

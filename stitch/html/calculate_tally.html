@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SplitSmart - Expense Tally</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#24d1c6",
+                        "background-light": "#f6f8f8",
+                        "background-dark": "#12201f",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen flex flex-col">
+<!-- Header -->
+<header class="sticky top-0 z-50 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 py-4">
+<div class="max-w-md mx-auto flex items-center justify-between">
+<div class="flex items-center gap-3">
+<button class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors">
+<span class="material-symbols-outlined align-middle">arrow_back</span>
+</button>
+<h1 class="text-xl font-bold tracking-tight">Expense Tally</h1>
+</div>
+<button class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors text-primary">
+<span class="material-symbols-outlined align-middle">sync</span>
+</button>
+</div>
+</header>
+<main class="flex-1 max-w-md mx-auto w-full px-4 py-6 space-y-6">
+<!-- Summary Card -->
+<section class="bg-primary/10 border border-primary/20 rounded-xl p-5 shadow-sm">
+<div class="flex justify-between items-center mb-4">
+<span class="text-sm font-medium text-primary/80 uppercase tracking-wider">Group Overview</span>
+<span class="bg-primary/20 text-primary text-xs font-bold px-2 py-1 rounded-full uppercase">Active</span>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div>
+<p class="text-slate-500 dark:text-slate-400 text-xs mb-1">Total Expense</p>
+<p class="text-2xl font-bold text-slate-900 dark:text-white">₹45,800.00</p>
+</div>
+<div class="text-right">
+<p class="text-slate-500 dark:text-slate-400 text-xs mb-1">Total Members</p>
+<p class="text-2xl font-bold text-slate-900 dark:text-white">6</p>
+</div>
+</div>
+</section>
+<!-- Individual Breakdown -->
+<section class="space-y-4">
+<div class="flex items-center justify-between">
+<h2 class="text-lg font-bold">Individual Breakdown</h2>
+<button class="text-primary text-sm font-semibold flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">download</span> Export PDF
+                </button>
+</div>
+<div class="bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden">
+<div class="overflow-x-auto no-scrollbar">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-slate-50 dark:bg-slate-800/50 text-xs text-slate-500 dark:text-slate-400 uppercase font-semibold">
+<th class="px-4 py-3">Member</th>
+<th class="px-4 py-3 text-right">Paid</th>
+<th class="px-4 py-3 text-right">Share</th>
+<th class="px-4 py-3 text-right">Balance</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+<!-- Rahul -->
+<tr class="text-sm">
+<td class="px-4 py-4 flex items-center gap-3">
+<div class="size-8 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
+<img alt="Rahul" class="size-full object-cover" data-alt="Cartoon avatar of Rahul" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC1EeTW1j2SlgBR7SOqJ8HJA18Js1Jok9F2JGclHUBJR6FHAoQGWqej5_oO4RVl1Trvq-2YpseZbPcM16cKh92tRrjgIbZG_vkqyLSk0CCn09-vjwwZ19Fn0HWi7DnhpzDwvNBkWD8Zfyiv088rJNI0dM3HLx89yZIyyObxbjY2qhtUE9yK2GxFoxnQyA31s9qh8SzcvItSSq8xWlam2FKAHjmMRvy2pikG1joMyqF4m0tUMdJ7egp0EgUwFPfxsUm7X8KzRcOf5LpG"/>
+</div>
+<span class="font-medium">Rahul S.</span>
+</td>
+<td class="px-4 py-4 text-right">₹8,000</td>
+<td class="px-4 py-4 text-right">₹7,500</td>
+<td class="px-4 py-4 text-right">
+<span class="text-primary font-bold">+₹500</span>
+</td>
+</tr>
+<!-- Arjun -->
+<tr class="text-sm">
+<td class="px-4 py-4 flex items-center gap-3">
+<div class="size-8 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
+<img alt="Arjun" class="size-full object-cover" data-alt="Cartoon avatar of Arjun" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBbZgbssH2S4T3EY6YOtM3pW0aFRII8In8IQWw1xKuA-2FGo_mKA0X0rDf0SUis8nk4kjlYLHSEqpCsvH1T3a_tzYq7Dxli8nDYO3Xiq-xkWhwOIFPCRo-KgM-Sh4sESno3aG1I-Riu6NsV0kBFBBoS58qUBFlxKD9Ybk7n52M1YLCuyJXv4TnKIiYCUmD4GcvDt6T9RES5SWGlgdg9ptMTV_MX8MgFmpYxphiznLh3wyrocBmMPJug_hqnlepBbvIbf9Ru4EXwf5Ep"/>
+</div>
+<span class="font-medium">Arjun V.</span>
+</td>
+<td class="px-4 py-4 text-right">₹12,500</td>
+<td class="px-4 py-4 text-right">₹7,500</td>
+<td class="px-4 py-4 text-right">
+<span class="text-primary font-bold">+₹5,000</span>
+</td>
+</tr>
+<!-- Priya -->
+<tr class="text-sm">
+<td class="px-4 py-4 flex items-center gap-3">
+<div class="size-8 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
+<img alt="Priya" class="size-full object-cover" data-alt="Cartoon avatar of Priya" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDiXCyz_cz4qxyg4-3tve1j5XE2pzGo7z6Ts9ftqMCTn-U_K-BfOSAFiPY9stuO-RSXYzRZ2-v1L_kv89aBca0g2oXcTgVugN4folQZ4--vPZcpHOPl9yf8M1-Y19VCbcgG7QwSIQ5Oq7XR-9edX84jTU5GjtG1Qx1Lz-nAyXZRrcLlCfLsiSu3h702vkrfrwNt9fbIvbVT6ACYZsSppSYE_MtEgBrkBE44UGsQUdmoPcaiQbJrCnBy3LL2qlZ8MMFr8msiSJC-Rn9r"/>
+</div>
+<span class="font-medium">Priya K.</span>
+</td>
+<td class="px-4 py-4 text-right">₹2,000</td>
+<td class="px-4 py-4 text-right">₹7,500</td>
+<td class="px-4 py-4 text-right">
+<span class="text-red-500 font-bold">-₹5,500</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<!-- Settlement Suggestions -->
+<section class="space-y-4">
+<h2 class="text-lg font-bold">Smart Settlements</h2>
+<div class="space-y-3">
+<!-- Settle Card 1 -->
+<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 rounded-xl flex items-center justify-between group">
+<div class="flex items-center gap-4">
+<div class="flex -space-x-3">
+<img class="size-10 rounded-full border-2 border-white dark:border-slate-900 bg-slate-100" data-alt="Avatar of Priya" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCTo_gXWOLqjqmpcKS1puKJds-6Z7fSdSrHsBmQ621ElqzTdre0JzdAziaXpR2UKFGIjJb_bPfRTUFEyGqNy0Bt5GBvMlh7MahZBjZNWATOza9_b_RYjmIgwJunmFPVA4KUxX9gGvVajSrchyOE6wopjIWvdwIBA5tJXWaKobtm1lZ3yrkwSGB7q36BxDD7ToLV6Fcv0yB5uNe-yFSkxRoKZDaK1NCdYBWYAsSVyuG9ENsJh8-1CfzoLin_0kkcN0Z_exzu-LhCrCqR"/>
+<img class="size-10 rounded-full border-2 border-white dark:border-slate-900 bg-slate-100" data-alt="Avatar of Arjun" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDjW-nvK4WyhWctTSpRvUlTwO-YwPQi51ZN5lGvLLqN4sp84VyLoR3aL1ZD8W66SVaK_gJ7p1J7XTNXT5eWWECpdyaYgvw8jJp5-nIM-F9TBesarxOo-4rqW1FKG8U2CEii-1wcw8BiKJezazXvryx2kZI4ZCCrmqCjhJcJr0FO0uG6PLjs8ztLxFj2C57GVIwsmwy3HaPfxzMsy_AlzOwjFrrKSrdR6dU0-bD03vT6FqMUwRseCDfhb1uQ8SYXtZYjTNCssUrQVHyE"/>
+</div>
+<div>
+<p class="text-sm font-semibold">Priya pays Arjun</p>
+<p class="text-xl font-bold text-primary">₹5,000.00</p>
+</div>
+</div>
+<button class="bg-primary hover:bg-primary/90 text-background-dark px-4 py-2 rounded-lg font-bold text-sm transition-all transform active:scale-95">
+                        Settle
+                    </button>
+</div>
+<!-- Settle Card 2 -->
+<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 rounded-xl flex items-center justify-between group">
+<div class="flex items-center gap-4">
+<div class="flex -space-x-3">
+<img class="size-10 rounded-full border-2 border-white dark:border-slate-900 bg-slate-100" data-alt="Avatar of Priya" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCg4SlcLEQsy3HPSyjfFAZ0dknMUHO8xh1xuPYusR0Rg_7lKTAWwLfYesotVT8efMgj-CkurOdW0r0MOimo--UXi79baaZvN6o57UjaEu4iCXBDdAly8dnDJSmxrEtSqxv7qWdZOcWndoyQy19EAzHpcembvlgPMjboeqFN0lQo--Tmj9WlZPUeF9VFs1laYbfcM2nPHbVANHIsk0y7KArO4wmF2JZNgg2ElqA3zxG1ApcFZguz2lUOWotbaDnaRYv0pR6QaQg4O2WQ"/>
+<img class="size-10 rounded-full border-2 border-white dark:border-slate-900 bg-slate-100" data-alt="Avatar of Rahul" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHxZvrwAK7D_W_XOLThaRW5ezVb8QMYISHuIckPX1wMdUEO5Yw7ofkKma6h0bO-g_DEoRDQ2gJnZz9M_wJFH99oq6Nf_1WPPmdVJS9Y66afAOWcVhiBnFqDGLTqb7GfRNzeNsdgPVfiuBshF-ci5ldBDlA_Lg_LfVNqFOoY2DC6-sV2rs-oOJ2qQPf6mpU3LiHIYeEpFca2LAdkbYMESWtU3AN79o97Eav-Y8thUUVjVXDgqCepC0zCy9-zyxfAgVSUxxJ_7Vz0n4L"/>
+</div>
+<div>
+<p class="text-sm font-semibold">Priya pays Rahul</p>
+<p class="text-xl font-bold text-primary">₹500.00</p>
+</div>
+</div>
+<button class="bg-primary hover:bg-primary/90 text-background-dark px-4 py-2 rounded-lg font-bold text-sm transition-all transform active:scale-95">
+                        Settle
+                    </button>
+</div>
+</div>
+</section>
+<!-- Progress Footer Stats -->
+<section class="pt-4 border-t border-slate-200 dark:border-slate-800">
+<div class="flex justify-between text-xs text-slate-500 dark:text-slate-400 mb-2 font-medium">
+<span>TOTAL SETTLED: ₹40,300</span>
+<span>PENDING: ₹5,500</span>
+</div>
+<div class="w-full bg-slate-200 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[88%] rounded-full"></div>
+</div>
+</section>
+<div class="h-20"></div> <!-- Spacer for Nav -->
+</main>
+<!-- Bottom Nav Bar -->
+<nav class="fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 px-6 pb-6 pt-3 z-50">
+<div class="max-w-md mx-auto flex justify-between items-center">
+<a class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="text-[10px] font-medium">Home</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">receipt_long</span>
+<span class="text-[10px] font-medium">Expenses</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">calculate</span>
+<span class="text-[10px] font-bold">Tally</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="text-[10px] font-medium">Members</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-[10px] font-medium">Settings</span>
+</a>
+</div>
+</nav>
+<!-- Floating Action Button -->
+<button class="fixed bottom-24 right-6 size-14 bg-primary text-background-dark rounded-full shadow-lg shadow-primary/20 flex items-center justify-center z-40 transition-transform active:scale-90">
+<span class="material-symbols-outlined font-bold">share</span>
+</button>
+</body></html>

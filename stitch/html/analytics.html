@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SplitSmart Analytics</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#24d1c6",
+                        "background-light": "#f6f8f8",
+                        "background-dark": "#12201f",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen flex flex-col">
+<!-- Header -->
+<header class="sticky top-0 z-10 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
+<div class="flex items-center justify-between p-4">
+<button class="flex items-center justify-center size-10 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+<span class="material-symbols-outlined text-slate-600 dark:text-slate-400">arrow_back</span>
+</button>
+<h1 class="text-lg font-bold tracking-tight">Spending Insights</h1>
+<button class="flex items-center justify-center size-10 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+<span class="material-symbols-outlined text-slate-600 dark:text-slate-400">calendar_today</span>
+</button>
+</div>
+<!-- Tab Navigation -->
+<div class="flex px-4 gap-8">
+<a class="pb-3 text-sm font-semibold text-slate-500 dark:text-slate-400 border-b-2 border-transparent" href="#">Daily</a>
+<a class="pb-3 text-sm font-semibold text-slate-500 dark:text-slate-400 border-b-2 border-transparent" href="#">Weekly</a>
+<a class="pb-3 text-sm font-bold text-primary border-b-2 border-primary" href="#">Monthly</a>
+</div>
+</header>
+<main class="flex-1 overflow-y-auto p-4 space-y-6 pb-24">
+<!-- Summary Card -->
+<div class="bg-primary/10 dark:bg-primary/5 border border-primary/20 rounded-xl p-5">
+<div class="flex justify-between items-start mb-2">
+<p class="text-slate-600 dark:text-slate-400 text-sm font-medium">Total Group Spend</p>
+<span class="bg-green-500/20 text-green-500 text-xs font-bold px-2 py-1 rounded-full">+12.5%</span>
+</div>
+<h2 class="text-3xl font-bold text-slate-900 dark:text-white">$4,250.00</h2>
+<p class="text-xs text-slate-500 dark:text-slate-500 mt-2 italic">Spending is 15% higher than last month</p>
+</div>
+<!-- Pie Chart Section -->
+<section>
+<h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">pie_chart</span>
+                Category Breakdown
+            </h3>
+<div class="bg-white dark:bg-slate-900/50 rounded-xl p-6 border border-slate-200 dark:border-slate-800 flex flex-col items-center">
+<!-- Abstract Pie Chart Representation -->
+<div class="relative size-48 mb-6">
+<svg class="size-full transform -rotate-90" viewbox="0 0 36 36">
+<circle class="text-slate-100 dark:text-slate-800" cx="18" cy="18" fill="transparent" r="15.915" stroke="currentColor" stroke-width="3"></circle>
+<circle cx="18" cy="18" fill="transparent" r="15.915" stroke="#24d1c6" stroke-dasharray="40 60" stroke-dashoffset="0" stroke-width="3"></circle>
+<circle cx="18" cy="18" fill="transparent" r="15.915" stroke="#3b82f6" stroke-dasharray="25 75" stroke-dashoffset="-40" stroke-width="3"></circle>
+<circle cx="18" cy="18" fill="transparent" r="15.915" stroke="#8b5cf6" stroke-dasharray="20 80" stroke-dashoffset="-65" stroke-width="3"></circle>
+<circle cx="18" cy="18" fill="transparent" r="15.915" stroke="#f59e0b" stroke-dasharray="15 85" stroke-dashoffset="-85" stroke-width="3"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="text-xs text-slate-500 uppercase font-bold tracking-wider">Food</span>
+<span class="text-xl font-bold">40%</span>
+</div>
+</div>
+<!-- Legend -->
+<div class="grid grid-cols-2 gap-4 w-full">
+<div class="flex items-center gap-2">
+<span class="size-3 rounded-full bg-primary"></span>
+<span class="text-sm text-slate-600 dark:text-slate-400">Food &amp; Dining</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="size-3 rounded-full bg-blue-500"></span>
+<span class="text-sm text-slate-600 dark:text-slate-400">Travel</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="size-3 rounded-full bg-purple-500"></span>
+<span class="text-sm text-slate-600 dark:text-slate-400">Utilities</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="size-3 rounded-full bg-amber-500"></span>
+<span class="text-sm text-slate-600 dark:text-slate-400">Groceries</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Bar Graph Section -->
+<section>
+<h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">bar_chart</span>
+                Monthly Trend
+            </h3>
+<div class="bg-white dark:bg-slate-900/50 rounded-xl p-6 border border-slate-200 dark:border-slate-800 h-64 flex flex-col">
+<div class="flex-1 flex items-end justify-between gap-2 px-2">
+<div class="flex flex-col items-center gap-2 flex-1 group">
+<div class="w-full bg-primary/20 rounded-t-md h-24 group-hover:bg-primary/40 transition-all"></div>
+<span class="text-[10px] text-slate-400 font-medium">MAY</span>
+</div>
+<div class="flex flex-col items-center gap-2 flex-1 group">
+<div class="w-full bg-primary/20 rounded-t-md h-32 group-hover:bg-primary/40 transition-all"></div>
+<span class="text-[10px] text-slate-400 font-medium">JUN</span>
+</div>
+<div class="flex flex-col items-center gap-2 flex-1 group">
+<div class="w-full bg-primary/20 rounded-t-md h-20 group-hover:bg-primary/40 transition-all"></div>
+<span class="text-[10px] text-slate-400 font-medium">JUL</span>
+</div>
+<div class="flex flex-col items-center gap-2 flex-1 group">
+<div class="w-full bg-primary/20 rounded-t-md h-40 group-hover:bg-primary/40 transition-all"></div>
+<span class="text-[10px] text-slate-400 font-medium">AUG</span>
+</div>
+<div class="flex flex-col items-center gap-2 flex-1 group">
+<div class="w-full bg-primary/20 rounded-t-md h-28 group-hover:bg-primary/40 transition-all"></div>
+<span class="text-[10px] text-slate-400 font-medium">SEP</span>
+</div>
+<div class="flex flex-col items-center gap-2 flex-1 group">
+<div class="w-full bg-primary rounded-t-md h-48 shadow-[0_0_15px_rgba(36,209,198,0.3)]"></div>
+<span class="text-[10px] text-primary font-bold">OCT</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Most Spending Member Card -->
+<section>
+<h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">star</span>
+                Top Contributor
+            </h3>
+<div class="bg-gradient-to-r from-slate-900 to-slate-800 dark:from-slate-900 dark:to-background-dark border border-primary/30 rounded-xl p-4 flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="relative">
+<img alt="Member Avatar" class="size-14 rounded-full object-cover border-2 border-primary" data-alt="Profile portrait of a smiling young man" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD1Pj5rtCNcEyfhvGrJBhaDpEH3JzHLuSzUe9MjONczVq0c38kEPLIS3Waa1UxzSJavjSAOwM3eMIy_OXchYnDQmPMCffz_4Mh3tfYZT8TDzuCowIwK002aysWdwSmOYScjJD5CKkZpLBasBvT70GFtrKJrHvuxVEeRGaMQ1sm_B32wLM38g9UyLEb1476_nMRfSizvNYCcPVuqseCZmB9O8EeYpOgKjvyFmyRlFou0hrVN_NilpF8wCTx0QOfxKeUFOfH80SvHXKJN"/>
+<div class="absolute -bottom-1 -right-1 bg-primary text-slate-900 rounded-full size-6 flex items-center justify-center">
+<span class="material-symbols-outlined text-[16px] font-bold">workspace_premium</span>
+</div>
+</div>
+<div>
+<h4 class="font-bold text-white">Alex Johnson</h4>
+<p class="text-slate-400 text-xs">Total Contributions</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-xl font-bold text-primary">$1,840.50</p>
+<p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold">43.3% of total</p>
+</div>
+</div>
+</section>
+<!-- Category Breakdown List -->
+<section class="space-y-3">
+<h3 class="text-lg font-bold mb-4">Detailed Breakdown</h3>
+<div class="bg-white dark:bg-slate-900/30 rounded-xl divide-y divide-slate-100 dark:divide-slate-800 overflow-hidden border border-slate-200 dark:border-slate-800">
+<div class="p-4 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-lg bg-primary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">restaurant</span>
+</div>
+<div>
+<p class="font-semibold text-sm">Food &amp; Dining</p>
+<p class="text-xs text-slate-500">12 transactions</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-bold text-sm">$1,700.00</p>
+<p class="text-[10px] text-primary">40%</p>
+</div>
+</div>
+<div class="p-4 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-lg bg-blue-500/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-blue-500">flight_takeoff</span>
+</div>
+<div>
+<p class="font-semibold text-sm">Travel</p>
+<p class="text-xs text-slate-500">3 transactions</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-bold text-sm">$1,062.50</p>
+<p class="text-[10px] text-blue-500">25%</p>
+</div>
+</div>
+<div class="p-4 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-lg bg-purple-500/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-purple-500">lightbulb</span>
+</div>
+<div>
+<p class="font-semibold text-sm">Utilities</p>
+<p class="text-xs text-slate-500">4 transactions</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-bold text-sm">$850.00</p>
+<p class="text-[10px] text-purple-500">20%</p>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Navigation -->
+<nav class="fixed bottom-0 w-full bg-background-light dark:bg-background-dark border-t border-slate-200 dark:border-slate-800 px-4 pb-6 pt-2">
+<div class="flex justify-between items-center max-w-md mx-auto">
+<a class="flex flex-col items-center gap-1 text-slate-400 transition-colors" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="text-[10px] font-medium">Home</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400 transition-colors" href="#">
+<span class="material-symbols-outlined">receipt_long</span>
+<span class="text-[10px] font-medium">Expenses</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-primary transition-colors" href="#">
+<span class="material-symbols-outlined fill-1">pie_chart</span>
+<span class="text-[10px] font-bold">Analytics</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400 transition-colors" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="text-[10px] font-medium">Groups</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400 transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-[10px] font-medium">Settings</span>
+</a>
+</div>
+</nav>
+</body></html>
