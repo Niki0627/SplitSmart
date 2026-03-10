@@ -44,9 +44,12 @@ final groupExpensesProvider = StreamProvider.family<List<Expense>, String>((ref,
   return firestore
       .collection('expenses')
       .where('groupId', isEqualTo: groupId)
-      .orderBy('date', descending: true)
       .snapshots()
-      .map((s) => s.docs.map(Expense.fromDoc).toList());
+      .map((s) {
+        final list = s.docs.map(Expense.fromDoc).toList();
+        list.sort((a, b) => b.date.compareTo(a.date));
+        return list;
+      });
 });
 
 // All expenses for the current user (across groups)

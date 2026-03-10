@@ -144,7 +144,7 @@ class ExpenseCard extends StatelessWidget {
                     color: AppColors.slate800, borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
-                    expense.splitType.name[0].toUpperCase() + expense.splitType.name.substring(1) + ' Split',
+                    '${expense.splitType.name[0].toUpperCase()}${expense.splitType.name.substring(1)} Split',
                     style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: AppColors.slate400),
                   ),
                 ),

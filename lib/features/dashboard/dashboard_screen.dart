@@ -158,7 +158,7 @@ class DashboardScreen extends ConsumerWidget {
             loading: () => SliverPadding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               sliver: SliverList(delegate: SliverChildBuilderDelegate(
-                (_, i) => Padding(padding: const EdgeInsets.only(bottom: 12), child: ShimmerBox(height: 80)),
+                (_, i) => const Padding(padding: EdgeInsets.only(bottom: 12), child: ShimmerBox(height: 80)),
                 childCount: 3,
               )),
             ),

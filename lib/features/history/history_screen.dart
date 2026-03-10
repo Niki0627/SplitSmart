@@ -24,11 +24,11 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
     return Scaffold(
       backgroundColor: AppColors.backgroundDark,
       body: CustomScrollView(slivers: [
-        SliverAppBar(
+        const SliverAppBar(
           pinned: true, floating: false, expandedHeight: 0,
           backgroundColor: AppColors.backgroundDark,
           automaticallyImplyLeading: false,
-          title: const Text('Activity', style: TextStyle(fontSize: 19, fontWeight: FontWeight.w800)),
+          title: Text('Activity', style: TextStyle(fontSize: 19, fontWeight: FontWeight.w800)),
           surfaceTintColor: Colors.transparent,
         ),
         SliverToBoxAdapter(
@@ -64,7 +64,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
             }).toList();
 
             if (filtered.isEmpty) {
-              return SliverToBoxAdapter(child: EmptyState(
+              return const SliverToBoxAdapter(child: EmptyState(
                 icon: Icons.receipt_long_rounded,
                 title: 'No activity',
                 subtitle: 'Your expenses will appear here',
@@ -83,7 +83,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
           loading: () => SliverPadding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             sliver: SliverList(delegate: SliverChildBuilderDelegate(
-              (_, i) => Padding(padding: const EdgeInsets.only(bottom: 10), child: ShimmerBox(height: 80)),
+              (_, i) => const Padding(padding: EdgeInsets.only(bottom: 10), child: ShimmerBox(height: 80)),
               childCount: 5,
             )),
           ),

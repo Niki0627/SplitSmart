@@ -345,9 +345,9 @@ class _EditGroupScreenState extends State<EditGroupScreen> {
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(color: AppColors.primary.withValues(alpha: 0.4)),
                   ),
-                  child: Row(
+                  child: const Row(
                     mainAxisSize: MainAxisSize.min,
-                    children: const [
+                    children: [
                       Icon(Icons.person_add_rounded, size: 14, color: AppColors.primary),
                       SizedBox(width: 5),
                       Text(

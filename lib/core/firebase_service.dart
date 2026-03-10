@@ -4,7 +4,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'models.dart';
-import 'package:uuid/uuid.dart';
 
 // ─── Friendly error messages from Firebase Auth codes ─────────────────────────
 String _friendlyAuthError(dynamic e) {
@@ -59,9 +58,9 @@ class FirebaseService {
     scopes: ['email', 'profile'],
     serverClientId: '501819933249-elrcu2gbcp82l02g616sejsb45cc0lp1.apps.googleusercontent.com',
   );
-  final _uuid = const Uuid();
 
   User? get currentUser => _auth.currentUser;
+  FirebaseFirestore get db => _db;
 
   // ── Auth ────────────────────────────────────────────────────────────────────
 

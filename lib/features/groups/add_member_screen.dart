@@ -176,7 +176,10 @@ class _AddMemberScreenState extends State<AddMemberScreen> {
     }
 
     try {
-      final contact = await FlutterContacts.openExternalPick();
+      final picked = await FlutterContacts.openExternalPick();
+      if (picked == null) return;
+      
+      final contact = await FlutterContacts.getContact(picked.id);
       if (contact == null) return;
       
       String pickedValue = '';

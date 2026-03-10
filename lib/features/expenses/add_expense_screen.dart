@@ -73,7 +73,8 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
   @override
   Widget build(BuildContext context) {
     final groupAsync = ref.watch(groupsProvider);
-    final group = groupAsync.value?.firstWhere((g) => g.id == widget.groupId, orElse: () => throw Exception(''));
+    final groups = groupAsync.value ?? [];
+    final group = groups.isEmpty ? null : groups.cast<Group?>().firstWhere((g) => g!.id == widget.groupId, orElse: () => null);
     final uid = firebaseService.currentUser?.uid ?? '';
     _paidBy ??= uid;
 
@@ -121,7 +122,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
                 style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 14),
                 items: [
                   DropdownMenuItem(value: uid, child: const Text('You')),
-                  if (group != null) ...group.memberIds.where((m) => m != uid).map((m) => DropdownMenuItem(value: m, child: Text('Member'))),
+                  if (group != null) ...group.memberIds.where((m) => m != uid).map((m) => DropdownMenuItem(value: m, child: const Text('Member'))),
                 ],
                 onChanged: (v) => setState(() => _paidBy = v),
               ),

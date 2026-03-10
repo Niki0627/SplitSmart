@@ -111,16 +111,16 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                       ),
                     ),
                     const SizedBox(height: 14),
-                    Text('INITIALIZING...', style: TextStyle(color: AppColors.slate600, fontSize: 11, fontWeight: FontWeight.w700, letterSpacing: 2)),
+                    const Text('INITIALIZING...', style: TextStyle(color: AppColors.slate600, fontSize: 11, fontWeight: FontWeight.w700, letterSpacing: 2)),
                   ]),
                 ),
               ]),
             ),
           ),
           // Footer
-          Positioned(
+          const Positioned(
             bottom: 32, left: 0, right: 0,
-            child: Row(mainAxisAlignment: MainAxisAlignment.center, children: const [
+            child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
               Icon(Icons.verified_user_rounded, color: AppColors.slate700, size: 14),
               SizedBox(width: 6),
               Text('SECURE PAYMENTS', style: TextStyle(color: AppColors.slate700, fontSize: 10, fontWeight: FontWeight.w700, letterSpacing: 2)),

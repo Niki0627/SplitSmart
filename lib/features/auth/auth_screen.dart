@@ -517,11 +517,11 @@ class _FieldLabel extends StatelessWidget {
 class _DividerRow extends StatelessWidget {
   const _DividerRow();
   @override
-  Widget build(BuildContext context) => Row(
+  Widget build(BuildContext context) => const Row(
     children: [
-      const Expanded(child: Divider(color: AppColors.slate700)),
+      Expanded(child: Divider(color: AppColors.slate700)),
       Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 14),
+        padding: EdgeInsets.symmetric(horizontal: 14),
         child: Text(
           'or continue with email',
           style: TextStyle(
@@ -532,7 +532,7 @@ class _DividerRow extends StatelessWidget {
           ),
         ),
       ),
-      const Expanded(child: Divider(color: AppColors.slate700)),
+      Expanded(child: Divider(color: AppColors.slate700)),
     ],
   );
 }

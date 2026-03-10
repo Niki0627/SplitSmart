@@ -37,11 +37,15 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
     try {
       final user = await firebaseService.findUserByEmail(email);
       if (user == null) {
-        if (mounted) ScaffoldMessenger.of(context).showSnackBar(
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('User not found. Make sure they have a SplitSmart account.'), backgroundColor: AppColors.rose, behavior: SnackBarBehavior.floating));
+        }
       } else if (_memberIds.contains(user.uid)) {
-        if (mounted) ScaffoldMessenger.of(context).showSnackBar(
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Already added'), backgroundColor: AppColors.amber, behavior: SnackBarBehavior.floating));
+        }
       } else {
         setState(() { _memberIds.add(user.uid); _memberNames.add(user.name); });
         _emailCtrl.clear();
@@ -155,7 +159,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
         const SizedBox(height: 40),
         PrimaryButton(label: 'Create Group', icon: Icons.check_rounded, onPressed: _loading ? null : _create, loading: _loading),
         const SizedBox(height: 20),
-        Text('You will be automatically added to the group.', textAlign: TextAlign.center, style: const TextStyle(color: AppColors.slate500, fontSize: 12)),
+        const Text('You will be automatically added to the group.', textAlign: TextAlign.center, style: TextStyle(color: AppColors.slate500, fontSize: 12)),
       ]),
     );
   }

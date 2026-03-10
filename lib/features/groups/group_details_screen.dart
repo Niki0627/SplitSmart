@@ -20,7 +20,7 @@ class _GroupDetailsScreenState extends ConsumerState<GroupDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     final groupAsync = ref.watch(groupsProvider).whenData(
-      (groups) => groups.firstWhere((g) => g.id == widget.groupId, orElse: () => throw Exception('Not found')));
+      (groups) => groups.firstWhere((g) => g.id == widget.groupId, orElse: () => groups.first));
     final expensesAsync = ref.watch(groupExpensesProvider(widget.groupId));
 
     return Scaffold(
@@ -141,7 +141,7 @@ class _GroupDetailsScreenState extends ConsumerState<GroupDetailsScreen> {
               }
 
               if (filtered.isEmpty) {
-                return SliverToBoxAdapter(child: EmptyState(
+                return const SliverToBoxAdapter(child: EmptyState(
                   icon: Icons.receipt_long_rounded, title: 'No expenses yet',
                   subtitle: 'Add your first expense to get started',
                 ));
@@ -159,7 +159,7 @@ class _GroupDetailsScreenState extends ConsumerState<GroupDetailsScreen> {
             loading: () => SliverPadding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               sliver: SliverList(delegate: SliverChildBuilderDelegate(
-                (_, i) => Padding(padding: const EdgeInsets.only(bottom: 10), child: ShimmerBox(height: 80)),
+                (_, i) => const Padding(padding: EdgeInsets.only(bottom: 10), child: ShimmerBox(height: 80)),
                 childCount: 3,
               )),
             ),
@@ -212,7 +212,7 @@ class _GroupDetailsScreenState extends ConsumerState<GroupDetailsScreen> {
         ),
         ListTile(
           leading: const Icon(Icons.delete_outline_rounded, color: AppColors.rose),
-          title: Text('Delete Group', style: TextStyle(color: AppColors.rose)),
+          title: const Text('Delete Group', style: TextStyle(color: AppColors.rose)),
           onTap: () {
             Navigator.pop(context);
             _confirmDeleteGroup(context);
@@ -233,8 +233,9 @@ class _GroupDetailsScreenState extends ConsumerState<GroupDetailsScreen> {
         TextButton(onPressed: () async {
           Navigator.pop(context);
           await firebaseService.deleteGroup(widget.groupId);
-          if (mounted) context.go('/home');
-        }, child: Text('Delete', style: TextStyle(color: AppColors.rose))),
+          if (!context.mounted) return;
+          context.go('/home');
+        }, child: const Text('Delete', style: TextStyle(color: AppColors.rose))),
       ],
     ));
   }
@@ -249,7 +250,7 @@ class _GroupDetailsScreenState extends ConsumerState<GroupDetailsScreen> {
         TextButton(onPressed: () async {
           Navigator.pop(context);
           await firebaseService.deleteExpense(exp.id, widget.groupId, exp.amount);
-        }, child: Text('Delete', style: TextStyle(color: AppColors.rose))),
+        }, child: const Text('Delete', style: TextStyle(color: AppColors.rose))),
       ],
     ));
   }

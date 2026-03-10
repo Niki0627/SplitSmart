@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../core/theme.dart';
 import '../../core/providers.dart';
 import '../../core/firebase_service.dart';
@@ -15,14 +16,17 @@ class SettleUpScreen extends ConsumerStatefulWidget {
 }
 
 class _SettleUpScreenState extends ConsumerState<SettleUpScreen> {
-  String? _selectedMember;
   bool _loading = false;
 
   @override
   Widget build(BuildContext context) {
     final expensesAsync = ref.watch(groupExpensesProvider(widget.groupId));
-    final groupAsync = ref.watch(groupsProvider).whenData((gs) => gs.firstWhere((g) => g.id == widget.groupId));
+    final groupAsync = ref.watch(groupsProvider).whenData(
+        (gs) => gs.firstWhere((g) => g.id == widget.groupId, orElse: () => gs.first));
     final uid = firebaseService.currentUser?.uid ?? '';
+
+    final memberIds = groupAsync.value?.memberIds ?? [];
+    final membersAsync = ref.watch(groupMembersProvider(memberIds));
 
     return Scaffold(
       backgroundColor: AppColors.backgroundDark,
@@ -35,19 +39,38 @@ class _SettleUpScreenState extends ConsumerState<SettleUpScreen> {
       body: expensesAsync.when(
         data: (expenses) {
           final group = groupAsync.value;
-          final memberIds = group?.memberIds ?? [];
-          final balances = firebaseService.calculateBalances(expenses, memberIds);
+          final ids = group?.memberIds ?? [];
+          final balances = firebaseService.calculateBalances(expenses, ids);
+
+          // Build a name lookup map from resolved members
+          final nameMap = <String, String>{};
+          final initialsMap = <String, String>{};
+          membersAsync.whenData((members) {
+            for (final m in members) {
+              nameMap[m.uid] = m.name;
+              initialsMap[m.uid] = m.initials;
+            }
+          });
+
+          String resolveName(String id) {
+            if (id == uid) return 'You';
+            return nameMap[id] ?? 'Member';
+          }
+
+          String resolveInitials(String id) {
+            return initialsMap[id] ?? (id.isNotEmpty ? id[0].toUpperCase() : '?');
+          }
 
           // Amounts current user owes others
           final owes = <String, double>{};
-          for (final who in memberIds) {
+          for (final who in ids) {
             final amt = balances[uid]?[who] ?? 0;
             if (amt > 0.01) owes[who] = amt;
           }
 
           // Amounts others owe to current user
           final owed = <String, double>{};
-          for (final who in memberIds) {
+          for (final who in ids) {
             final amt = balances[who]?[uid] ?? 0;
             if (amt > 0.01) owed[who] = amt;
           }
@@ -58,7 +81,8 @@ class _SettleUpScreenState extends ConsumerState<SettleUpScreen> {
               padding: const EdgeInsets.all(18),
               decoration: BoxDecoration(
                 gradient: LinearGradient(colors: [AppColors.primary.withValues(alpha: 0.15), AppColors.primary.withValues(alpha: 0.05)]),
-                borderRadius: BorderRadius.circular(18), border: Border.all(color: AppColors.primary.withValues(alpha: 0.3)),
+                borderRadius: BorderRadius.circular(18),
+                border: Border.all(color: AppColors.primary.withValues(alpha: 0.3)),
               ),
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 const Text('YOUR SUMMARY', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.primary, letterSpacing: 1.5)),
@@ -83,9 +107,12 @@ class _SettleUpScreenState extends ConsumerState<SettleUpScreen> {
                 padding: const EdgeInsets.only(bottom: 10),
                 child: _SettlementCard(
                   memberId: e.key,
+                  memberName: resolveName(e.key),
+                  memberInitials: resolveInitials(e.key),
                   amount: e.value,
                   isOwed: false,
-                  onSettle: () => _settle(context, e.key, uid, e.value, false),
+                  loading: _loading,
+                  onSettle: () => _settle(context, e.key, uid, e.value),
                   onPayViaGPay: () => _payViaUpi(e.key, e.value),
                 ),
               )),
@@ -97,8 +124,15 @@ class _SettleUpScreenState extends ConsumerState<SettleUpScreen> {
               const SizedBox(height: 10),
               ...owed.entries.map((e) => Padding(
                 padding: const EdgeInsets.only(bottom: 10),
-                child: _SettlementCard(memberId: e.key, amount: e.value, isOwed: true,
-                  onSettle: () => _settle(context, uid, e.key, e.value, true)),
+                child: _SettlementCard(
+                  memberId: e.key,
+                  memberName: resolveName(e.key),
+                  memberInitials: resolveInitials(e.key),
+                  amount: e.value,
+                  isOwed: true,
+                  loading: _loading,
+                  onSettle: () => _settle(context, uid, e.key, e.value),
+                ),
               )),
             ],
 
@@ -124,20 +158,25 @@ class _SettleUpScreenState extends ConsumerState<SettleUpScreen> {
     );
   }
 
-  Future<void> _settle(BuildContext ctx, String from, String to, double amount, bool isOwed) async {
+  Future<void> _settle(BuildContext ctx, String from, String to, double amount) async {
     final confirmed = await showDialog<bool>(
       context: ctx,
-      builder: (_) => AlertDialog(
+      builder: (ctx2) => AlertDialog(
         backgroundColor: const Color(0xFF1A2E2C),
         title: const Text('Mark as Settled?'),
         content: Text('Record payment of ₹${amount.toStringAsFixed(0)}?'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(_, false), child: const Text('Cancel')),
-          ElevatedButton(onPressed: () => Navigator.pop(_, true), child: const Text('Settle')),
+          TextButton(onPressed: () => Navigator.pop(ctx2, false), child: const Text('Cancel', style: TextStyle(color: AppColors.slate400))),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx2, true),
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.emerald, foregroundColor: Colors.white),
+            child: const Text('Settle'),
+          ),
         ],
       ),
     );
     if (confirmed == true) {
+      setState(() => _loading = true);
       try {
         await firebaseService.settleUp(widget.groupId, from, from, to, to, amount);
         if (mounted) {
@@ -146,6 +185,8 @@ class _SettleUpScreenState extends ConsumerState<SettleUpScreen> {
         }
       } catch (e) {
         if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e'), backgroundColor: AppColors.rose));
+      } finally {
+        if (mounted) setState(() => _loading = false);
       }
     }
   }
@@ -161,30 +202,30 @@ class _SettleUpScreenState extends ConsumerState<SettleUpScreen> {
 
       String targetUpi = upiId;
       if (targetUpi.isEmpty && phone.isNotEmpty) {
-        // Fallback for demo if users haven't set upi ID but have phone
-        targetUpi = '$phone@paytm'; 
+        final bare = phone.replaceAll(RegExp(r'[^\d]'), '');
+        final digits = bare.length >= 10 ? bare.substring(bare.length - 10) : bare;
+        targetUpi = '$digits@paytm';
       }
 
       if (targetUpi.isEmpty) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text('This user has not set up a UPI ID or Phone number.'),
-            backgroundColor: AppColors.rose,
-            behavior: SnackBarBehavior.floating,
+            content: Text('This user has not set up a UPI ID or phone number.'),
+            backgroundColor: AppColors.rose, behavior: SnackBarBehavior.floating,
           ));
         }
         return;
       }
 
-      final uri = Uri.parse('upi://pay?pa=$targetUpi&pn=${Uri.encodeComponent(name)}&am=${amount.toStringAsFixed(2)}&cu=INR');
+      final uri = Uri.parse(
+          'upi://pay?pa=$targetUpi&pn=${Uri.encodeComponent(name)}&am=${amount.toStringAsFixed(2)}&cu=INR');
       if (await canLaunchUrl(uri)) {
         await launchUrl(uri);
       } else {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text('Could not find a UPI app (GPay, PhonePe, etc.) installed.'),
-            backgroundColor: AppColors.rose,
-            behavior: SnackBarBehavior.floating,
+            content: Text('No UPI app found (GPay, PhonePe, etc.)'),
+            backgroundColor: AppColors.rose, behavior: SnackBarBehavior.floating,
           ));
         }
       }
@@ -192,8 +233,7 @@ class _SettleUpScreenState extends ConsumerState<SettleUpScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text('Failed to launch UPI: $e'),
-          backgroundColor: AppColors.rose,
-          behavior: SnackBarBehavior.floating,
+          backgroundColor: AppColors.rose, behavior: SnackBarBehavior.floating,
         ));
       }
     }
@@ -202,14 +242,21 @@ class _SettleUpScreenState extends ConsumerState<SettleUpScreen> {
 
 class _SettlementCard extends StatelessWidget {
   final String memberId;
+  final String memberName;
+  final String memberInitials;
   final double amount;
   final bool isOwed;
+  final bool loading;
   final VoidCallback onSettle;
   final VoidCallback? onPayViaGPay;
+
   const _SettlementCard({
     required this.memberId,
+    required this.memberName,
+    required this.memberInitials,
     required this.amount,
     required this.isOwed,
+    required this.loading,
     required this.onSettle,
     this.onPayViaGPay,
   });
@@ -218,25 +265,36 @@ class _SettlementCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(color: const Color(0xFF1A2E2C), borderRadius: BorderRadius.circular(14), border: Border.all(color: AppColors.primary.withValues(alpha: 0.1))),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1A2E2C),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppColors.primary.withValues(alpha: 0.1)),
+      ),
       child: Column(
         children: [
           Row(children: [
-            UserAvatar(initials: memberId[0].toUpperCase(), size: 44),
+            UserAvatar(initials: memberInitials, size: 44),
             const SizedBox(width: 12),
             Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              const Text('Group Member', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
-              Text(isOwed ? 'Owes you' : 'You owe them', style: const TextStyle(color: AppColors.slate500, fontSize: 12)),
+              Text(memberName, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15)),
+              Text(isOwed ? 'Owes you' : 'You owe them',
+                style: const TextStyle(color: AppColors.slate500, fontSize: 12)),
             ])),
             Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-              Text('₹${amount.toStringAsFixed(0)}', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18, color: isOwed ? AppColors.emerald : AppColors.rose)),
+              Text('₹${amount.toStringAsFixed(0)}',
+                style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18,
+                  color: isOwed ? AppColors.emerald : AppColors.rose)),
               const SizedBox(height: 6),
               GestureDetector(
-                onTap: onSettle,
+                onTap: loading ? null : onSettle,
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-                  decoration: BoxDecoration(color: AppColors.primary, borderRadius: BorderRadius.circular(20)),
-                  child: const Text('Settle', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.backgroundDark)),
+                  decoration: BoxDecoration(
+                    color: loading ? AppColors.slate700 : AppColors.primary,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: const Text('Settle',
+                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.backgroundDark)),
                 ),
               ),
             ]),
@@ -248,7 +306,8 @@ class _SettlementCard extends StatelessWidget {
               child: OutlinedButton.icon(
                 onPressed: onPayViaGPay,
                 icon: const Icon(Icons.account_balance_wallet_rounded, size: 16),
-                label: const Text('Pay via GPay / UPI', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700)),
+                label: const Text('Pay via GPay / UPI',
+                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700)),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: AppColors.primary,
                   side: BorderSide(color: AppColors.primary.withValues(alpha: 0.5)),
@@ -265,7 +324,10 @@ class _SettlementCard extends StatelessWidget {
 }
 
 class _SummaryBox extends StatelessWidget {
-  final String label; final IconData icon; final double amount; final Color color;
+  final String label;
+  final IconData icon;
+  final double amount;
+  final Color color;
   const _SummaryBox({required this.label, required this.icon, required this.amount, required this.color});
   @override
   Widget build(BuildContext context) => Column(children: [

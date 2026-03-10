@@ -17,15 +17,15 @@ class RemindersScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: AppColors.backgroundDark,
       body: CustomScrollView(slivers: [
-        SliverAppBar(
+        const SliverAppBar(
           pinned: true, backgroundColor: AppColors.backgroundDark, automaticallyImplyLeading: false,
-          title: const Text('Notifications', style: TextStyle(fontSize: 19, fontWeight: FontWeight.w800)),
+          title: Text('Notifications', style: TextStyle(fontSize: 19, fontWeight: FontWeight.w800)),
           surfaceTintColor: Colors.transparent,
         ),
         remindersAsync.when(
           data: (reminders) {
             if (reminders.isEmpty) {
-              return SliverFillRemaining(child: EmptyState(
+              return const SliverFillRemaining(child: EmptyState(
                 icon: Icons.notifications_outlined,
                 title: 'No notifications',
                 subtitle: 'Payment reminders and alerts will appear here',
@@ -37,12 +37,12 @@ class RemindersScreen extends ConsumerWidget {
               padding: const EdgeInsets.fromLTRB(20, 8, 20, 100),
               sliver: SliverList(delegate: SliverChildListDelegate([
                 if (unread.isNotEmpty) ...[
-                  Padding(padding: const EdgeInsets.only(bottom: 10), child: Text('NEW', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.primary, letterSpacing: 1.5))),
+                  const Padding(padding: EdgeInsets.only(bottom: 10), child: Text('NEW', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.primary, letterSpacing: 1.5))),
                   ...unread.map((r) => _ReminderCard(reminder: r, onTap: () => firebaseService.markReminderRead(r.id))),
                   const SizedBox(height: 16),
                 ],
                 if (read.isNotEmpty) ...[
-                  Padding(padding: const EdgeInsets.only(bottom: 10), child: Text('EARLIER', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.slate500, letterSpacing: 1.5))),
+                  const Padding(padding: EdgeInsets.only(bottom: 10), child: Text('EARLIER', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.slate500, letterSpacing: 1.5))),
                   ...read.map((r) => _ReminderCard(reminder: r, onTap: null)),
                 ],
               ])),
@@ -51,7 +51,7 @@ class RemindersScreen extends ConsumerWidget {
           loading: () => SliverPadding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             sliver: SliverList(delegate: SliverChildBuilderDelegate(
-              (_, i) => Padding(padding: const EdgeInsets.only(bottom: 10), child: ShimmerBox(height: 70)),
+              (_, i) => const Padding(padding: EdgeInsets.only(bottom: 10), child: ShimmerBox(height: 70)),
               childCount: 4,
             )),
           ),
@@ -88,7 +88,7 @@ class RemindersScreen extends ConsumerWidget {
           const Text('Group', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.slate300)),
           const SizedBox(height: 6),
           DropdownButtonFormField<String>(
-            value: selectedGroup,
+            initialValue: selectedGroup,
             dropdownColor: const Color(0xFF1A2E2C),
             decoration: const InputDecoration(),
             hint: const Text('Select group'),
@@ -118,7 +118,7 @@ class RemindersScreen extends ConsumerWidget {
                   groupName: g.name, message: msgCtrl.text.isNotEmpty ? msgCtrl.text : 'Payment due',
                   dueDate: dueDate,
                 );
-                Navigator.pop(ctx);
+                if (ctx.mounted) Navigator.pop(ctx);
               },
               child: const Text('Set Reminder', style: TextStyle(fontWeight: FontWeight.w700)),
             ),
@@ -130,7 +130,7 @@ class RemindersScreen extends ConsumerWidget {
 }
 
 class _ReminderCard extends StatelessWidget {
-  final reminder;
+  final dynamic reminder;
   final VoidCallback? onTap;
   const _ReminderCard({required this.reminder, this.onTap});
 

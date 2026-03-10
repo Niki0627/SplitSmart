@@ -20,12 +20,12 @@ class SettingsScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: AppColors.backgroundDark,
       body: CustomScrollView(slivers: [
-        SliverAppBar(
+        const SliverAppBar(
           pinned: true,
           backgroundColor: AppColors.backgroundDark,
           automaticallyImplyLeading: false,
           surfaceTintColor: Colors.transparent,
-          title: const Text('Profile',
+          title: Text('Profile',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
         ),
         SliverToBoxAdapter(
@@ -122,7 +122,7 @@ class SettingsScreen extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(width: 12),
-                Expanded(
+                const Expanded(
                   child: _StatCard(
                     icon: Icons.check_circle_rounded,
                     iconColor: AppColors.emerald,
@@ -368,124 +368,126 @@ class _EditProfileSheetState extends ConsumerState<_EditProfileSheet> {
         color: Color(0xFF1A2E2C),
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
-      child: Column(mainAxisSize: MainAxisSize.min, children: [
-        // Handle
-        Container(
-          width: 40,
-          height: 4,
-          decoration: BoxDecoration(
-            color: AppColors.slate700,
-            borderRadius: BorderRadius.circular(2),
-          ),
-        ),
-        const SizedBox(height: 20),
-        const Text('Edit Profile',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
-        const SizedBox(height: 6),
-        const Text('Update your name or phone number',
-            style: TextStyle(color: AppColors.slate500, fontSize: 13)),
-        const SizedBox(height: 24),
-
-        // Email (read-only)
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-          decoration: BoxDecoration(
-            color: AppColors.backgroundDark,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.slate700),
-          ),
-          child: Row(children: [
-            const Icon(Icons.email_outlined, color: AppColors.slate500, size: 18),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Text(widget.user.email,
-                  style: const TextStyle(
-                      color: AppColors.slate500, fontSize: 14)),
+      child: SingleChildScrollView(
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          // Handle
+          Container(
+            width: 40,
+            height: 4,
+            decoration: BoxDecoration(
+              color: AppColors.slate700,
+              borderRadius: BorderRadius.circular(2),
             ),
-            const Text('Fixed',
-                style: TextStyle(
-                    color: AppColors.slate600,
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700)),
-          ]),
-        ),
-        const SizedBox(height: 12),
-
-        // Name field
-        TextField(
-          controller: _nameCtrl,
-          style: const TextStyle(
-              color: Colors.white, fontWeight: FontWeight.w600, fontSize: 15),
-          textCapitalization: TextCapitalization.words,
-          decoration: InputDecoration(
-            hintText: 'Your full name',
-            prefixIcon: const Icon(Icons.person_rounded,
-                color: AppColors.primary, size: 20),
-            labelText: 'Display Name',
-            labelStyle:
-                const TextStyle(color: AppColors.slate400, fontSize: 13),
           ),
-        ),
-        const SizedBox(height: 12),
+          const SizedBox(height: 20),
+          const Text('Edit Profile',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+          const SizedBox(height: 6),
+          const Text('Update your name or phone number',
+              style: TextStyle(color: AppColors.slate500, fontSize: 13)),
+          const SizedBox(height: 24),
 
-        // Phone field
-        TextField(
-          controller: _phoneCtrl,
-          style: const TextStyle(
-              color: Colors.white, fontWeight: FontWeight.w600, fontSize: 15),
-          keyboardType: TextInputType.phone,
-          decoration: InputDecoration(
-            hintText: '+91 98765 43210',
-            prefixIcon: const Icon(Icons.phone_rounded,
-                color: AppColors.primary, size: 20),
-            labelText: 'Phone (for search)',
-            labelStyle:
-                const TextStyle(color: AppColors.slate400, fontSize: 13),
-          ),
-        ),
-        const SizedBox(height: 12),
-
-        // UPI ID field
-        TextField(
-          controller: _upiCtrl,
-          style: const TextStyle(
-              color: Colors.white, fontWeight: FontWeight.w600, fontSize: 15),
-          keyboardType: TextInputType.emailAddress,
-          decoration: InputDecoration(
-            hintText: 'john@upi',
-            prefixIcon: const Icon(Icons.account_balance_wallet_rounded,
-                color: AppColors.primary, size: 20),
-            labelText: 'UPI ID (Optional)',
-            labelStyle:
-                const TextStyle(color: AppColors.slate400, fontSize: 13),
-          ),
-        ),
-        const SizedBox(height: 24),
-
-        // Save button
-        SizedBox(
-          width: double.infinity,
-          height: 52,
-          child: ElevatedButton(
-            onPressed: _saving ? null : _save,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
-              foregroundColor: Colors.black87,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14)),
+          // Email (read-only)
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            decoration: BoxDecoration(
+              color: AppColors.backgroundDark,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: AppColors.slate700),
             ),
-            child: _saving
-                ? const SizedBox(
-                    width: 22,
-                    height: 22,
-                    child: CircularProgressIndicator(
-                        strokeWidth: 2.5, color: Colors.black87))
-                : const Text('Save Changes',
-                    style: TextStyle(
-                        fontWeight: FontWeight.w800, fontSize: 15)),
+            child: Row(children: [
+              const Icon(Icons.email_outlined, color: AppColors.slate500, size: 18),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(widget.user.email,
+                    style: const TextStyle(
+                        color: AppColors.slate500, fontSize: 14)),
+              ),
+              const Text('Fixed',
+                  style: TextStyle(
+                      color: AppColors.slate600,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700)),
+            ]),
           ),
-        ),
-      ]),
+          const SizedBox(height: 12),
+
+          // Name field
+          TextField(
+            controller: _nameCtrl,
+            style: const TextStyle(
+                color: Colors.white, fontWeight: FontWeight.w600, fontSize: 15),
+            textCapitalization: TextCapitalization.words,
+            decoration: const InputDecoration(
+              hintText: 'Your full name',
+              prefixIcon: Icon(Icons.person_rounded,
+                  color: AppColors.primary, size: 20),
+              labelText: 'Display Name',
+              labelStyle:
+                  TextStyle(color: AppColors.slate400, fontSize: 13),
+            ),
+          ),
+          const SizedBox(height: 12),
+
+          // Phone field
+          TextField(
+            controller: _phoneCtrl,
+            style: const TextStyle(
+                color: Colors.white, fontWeight: FontWeight.w600, fontSize: 15),
+            keyboardType: TextInputType.phone,
+            decoration: const InputDecoration(
+              hintText: '+91 98765 43210',
+              prefixIcon: Icon(Icons.phone_rounded,
+                  color: AppColors.primary, size: 20),
+              labelText: 'Phone (for search)',
+              labelStyle:
+                  TextStyle(color: AppColors.slate400, fontSize: 13),
+            ),
+          ),
+          const SizedBox(height: 12),
+
+          // UPI ID field
+          TextField(
+            controller: _upiCtrl,
+            style: const TextStyle(
+                color: Colors.white, fontWeight: FontWeight.w600, fontSize: 15),
+            keyboardType: TextInputType.emailAddress,
+            decoration: const InputDecoration(
+              hintText: 'john@upi',
+              prefixIcon: Icon(Icons.account_balance_wallet_rounded,
+                  color: AppColors.primary, size: 20),
+              labelText: 'UPI ID (Optional)',
+              labelStyle:
+                  TextStyle(color: AppColors.slate400, fontSize: 13),
+            ),
+          ),
+          const SizedBox(height: 24),
+
+          // Save button
+          SizedBox(
+            width: double.infinity,
+            height: 52,
+            child: ElevatedButton(
+              onPressed: _saving ? null : _save,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                foregroundColor: Colors.black87,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14)),
+              ),
+              child: _saving
+                  ? const SizedBox(
+                      width: 22,
+                      height: 22,
+                      child: CircularProgressIndicator(
+                          strokeWidth: 2.5, color: Colors.black87))
+                  : const Text('Save Changes',
+                      style: TextStyle(
+                          fontWeight: FontWeight.w800, fontSize: 15)),
+            ),
+          ),
+        ]),
+      ),
     );
   }
 }
