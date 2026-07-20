@@ -20,15 +20,18 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
   @override
   Widget build(BuildContext context) {
     final allExpenses = ref.watch(allExpensesProvider);
+    final currencySymbol = ref.watch(currencySymbolProvider);
+    final theme = Theme.of(context);
+    final primaryColor = theme.colorScheme.primary;
 
     return Scaffold(
-      backgroundColor: AppColors.backgroundDark,
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: CustomScrollView(slivers: [
         SliverAppBar(
           pinned: true,
           floating: false,
           expandedHeight: 0,
-          backgroundColor: AppColors.backgroundDark,
+          backgroundColor: theme.scaffoldBackgroundColor,
           automaticallyImplyLeading: false,
           title: const Text(
             'Analytics',
@@ -38,34 +41,38 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
             PopupMenuButton<int>(
               initialValue: _monthRange,
               onSelected: (v) => setState(() => _monthRange = v),
-              color: const Color(0xFF1A2E2C),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+              color: theme.colorScheme.surface,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14)),
               child: Container(
                 margin: const EdgeInsets.only(right: 16),
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.12),
+                  color: primaryColor.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: AppColors.primary.withValues(alpha: 0.3)),
+                  border:
+                      Border.all(color: primaryColor.withValues(alpha: 0.3)),
                 ),
                 child: Row(children: [
                   Text(
                     '$_monthRange mo',
-                    style: const TextStyle(
-                        color: AppColors.primary,
+                    style: TextStyle(
+                        color: primaryColor,
                         fontWeight: FontWeight.w700,
                         fontSize: 13),
                   ),
                   const SizedBox(width: 4),
-                  const Icon(Icons.keyboard_arrow_down_rounded,
-                      color: AppColors.primary, size: 16),
+                  Icon(Icons.keyboard_arrow_down_rounded,
+                      color: primaryColor, size: 16),
                 ]),
               ),
               itemBuilder: (_) => [3, 6, 12]
                   .map((m) => PopupMenuItem(
                         value: m,
                         child: Text('Last $m months',
-                            style: const TextStyle(fontWeight: FontWeight.w600)),
+                            style:
+                                const TextStyle(fontWeight: FontWeight.w600)),
                       ))
                   .toList(),
             ),
@@ -81,21 +88,20 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
                       width: 90,
                       height: 90,
                       decoration: BoxDecoration(
-                        color: AppColors.primary.withValues(alpha: 0.08),
+                        color: primaryColor.withValues(alpha: 0.08),
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(Icons.analytics_rounded,
-                          color: AppColors.primary, size: 44),
+                      child: Icon(Icons.analytics_rounded,
+                          color: primaryColor, size: 44),
                     ),
                     const SizedBox(height: 20),
                     const Text('No expense data yet',
                         style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w700)),
+                            fontSize: 18, fontWeight: FontWeight.w700)),
                     const SizedBox(height: 6),
                     const Text('Add expenses to see insights here',
-                        style: TextStyle(
-                            color: AppColors.slate500, fontSize: 14)),
+                        style:
+                            TextStyle(color: AppColors.slate500, fontSize: 14)),
                   ]),
                 ),
               );
@@ -112,7 +118,14 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
             final uid = firebaseService.currentUser?.uid ?? '';
             final mySpend = filtered
                 .where((e) => e.participants.contains(uid))
-                .fold(0.0, (s, e) => s + (e.amount / (e.participants.isEmpty ? 1 : e.participants.length)));
+                .fold(
+                    0.0,
+                    (s, e) =>
+                        s +
+                        (e.amount /
+                            (e.participants.isEmpty
+                                ? 1
+                                : e.participants.length)));
             final topContributor = _findTopContributor(filtered);
             final maxMonthly = monthlyData.values.isEmpty
                 ? 1.0
@@ -124,17 +137,19 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
                 delegate: SliverChildListDelegate([
                   // ── Summary row ──────────────────────────────────────────────
                   Row(children: [
-                    Expanded(child: _SummaryCard(
+                    Expanded(
+                        child: _SummaryCard(
                       label: 'TOTAL SPENT',
-                      value: '₹${totalSpent.toStringAsFixed(0)}',
+                      value: '$currencySymbol${totalSpent.toStringAsFixed(0)}',
                       subtitle: '${filtered.length} transactions',
                       color: AppColors.primary,
                       icon: Icons.payments_rounded,
                     )),
                     const SizedBox(width: 12),
-                    Expanded(child: _SummaryCard(
+                    Expanded(
+                        child: _SummaryCard(
                       label: 'YOUR SHARE',
-                      value: '₹${mySpend.toStringAsFixed(0)}',
+                      value: '$currencySymbol${mySpend.toStringAsFixed(0)}',
                       subtitle: 'in $_monthRange months',
                       color: AppColors.violet,
                       icon: Icons.person_rounded,
@@ -151,7 +166,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
                       barTouchData: BarTouchData(
                         enabled: true,
                         touchTooltipData: BarTouchTooltipData(
-                          getTooltipColor: (_) => const Color(0xFF1A2E2C),
+                          getTooltipColor: (_) => AppColors.surfaceDark,
                           tooltipRoundedRadius: 10,
                           getTooltipItem: (group, groupIndex, rod, rodIndex) {
                             final keys = monthlyData.keys.toList();
@@ -163,7 +178,8 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
                                   fontWeight: FontWeight.w600),
                               children: [
                                 TextSpan(
-                                  text: '₹${rod.toY.toStringAsFixed(0)}',
+                                  text:
+                                      '$currencySymbol${rod.toY.toStringAsFixed(0)}',
                                   style: const TextStyle(
                                       color: AppColors.primary,
                                       fontSize: 14,
@@ -202,25 +218,29 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
                             getTitlesWidget: (v, _) {
                               if (v == 0) return const SizedBox.shrink();
                               return Text(
-                                v >= 1000 ? '${(v / 1000).toStringAsFixed(0)}k' : v.toStringAsFixed(0),
+                                v >= 1000
+                                    ? '${(v / 1000).toStringAsFixed(0)}k'
+                                    : v.toStringAsFixed(0),
                                 style: const TextStyle(
-                                    color: AppColors.slate600,
-                                    fontSize: 10),
+                                    color: AppColors.slate600, fontSize: 10),
                               );
                             },
                           ),
                         ),
-                        topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                        rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                        topTitles: const AxisTitles(
+                            sideTitles: SideTitles(showTitles: false)),
+                        rightTitles: const AxisTitles(
+                            sideTitles: SideTitles(showTitles: false)),
                       ),
                       borderData: FlBorderData(show: false),
                       gridData: FlGridData(
                         show: true,
                         drawVerticalLine: false,
-                        getDrawingHorizontalLine: (_) =>
-                            const FlLine(color: Color(0xFF243A38), strokeWidth: 1),
+                        getDrawingHorizontalLine: (_) => const FlLine(
+                            color: Color(0xFF333333), strokeWidth: 1),
                       ),
-                      barGroups: monthlyData.entries.toList().asMap().entries.map((e) {
+                      barGroups:
+                          monthlyData.entries.toList().asMap().entries.map((e) {
                         return BarChartGroupData(
                           x: e.key,
                           barRods: [
@@ -343,17 +363,16 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF1A2E2C),
+                        color: AppColors.surfaceDark,
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
-                            color: AppColors.primary.withValues(alpha: 0.1)),
+                            color: AppColors.primary.withValues(alpha: 0.15)),
                       ),
                       child: Column(
                         children: categoryData.asMap().entries.map((entry) {
                           final e = entry.value;
-                          final pct = totalSpent > 0
-                              ? (e.value / totalSpent)
-                              : 0.0;
+                          final pct =
+                              totalSpent > 0 ? (e.value / totalSpent) : 0.0;
                           return Padding(
                             padding: const EdgeInsets.only(bottom: 14),
                             child: Column(
@@ -381,7 +400,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
                                     ),
                                   ),
                                   Text(
-                                    '₹${e.value.toStringAsFixed(0)}',
+                                    '$currencySymbol${e.value.toStringAsFixed(0)}',
                                     style: const TextStyle(
                                         fontWeight: FontWeight.w800,
                                         fontSize: 14),
@@ -392,10 +411,10 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
                                   borderRadius: BorderRadius.circular(4),
                                   child: LinearProgressIndicator(
                                     value: pct,
-                                    backgroundColor:
-                                        AppColors.slate800.withValues(alpha: 0.5),
-                                    valueColor:
-                                        AlwaysStoppedAnimation(_catColor(e.key)),
+                                    backgroundColor: AppColors.slate800
+                                        .withValues(alpha: 0.5),
+                                    valueColor: AlwaysStoppedAnimation(
+                                        _catColor(e.key)),
                                     minHeight: 5,
                                   ),
                                 ),
@@ -450,7 +469,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
                                       color: AppColors.slate500, fontSize: 12)),
                             ])),
                         Text(
-                          '₹${topContributor.$2.toStringAsFixed(0)}',
+                          '$currencySymbol${topContributor.$2.toStringAsFixed(0)}',
                           style: const TextStyle(
                               fontWeight: FontWeight.w800,
                               fontSize: 22,
@@ -475,8 +494,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
     );
   }
 
-  Widget _sectionLabel(String text) => Text(
-      text,
+  Widget _sectionLabel(String text) => Text(text,
       style: const TextStyle(
           fontSize: 11,
           fontWeight: FontWeight.w800,
@@ -490,17 +508,38 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
     for (int i = _monthRange - 1; i >= 0; i--) {
       final d = DateTime(now.year, now.month - i, 1);
       final key = [
-        'Jan','Feb','Mar','Apr','May','Jun',
-        'Jul','Aug','Sep','Oct','Nov','Dec'
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec'
       ][d.month - 1];
       result[key] = 0.0;
     }
     for (final e in expenses) {
       final key = [
-        'Jan','Feb','Mar','Apr','May','Jun',
-        'Jul','Aug','Sep','Oct','Nov','Dec'
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec'
       ][e.date.month - 1];
-      if (result.containsKey(key)) result[key] = (result[key] ?? 0.0) + e.amount;
+      if (result.containsKey(key))
+        result[key] = (result[key] ?? 0.0) + e.amount;
     }
     return result;
   }
@@ -527,25 +566,39 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
 
   Color _catColor(ExpenseCategory cat) {
     switch (cat) {
-      case ExpenseCategory.food:       return AppColors.primary;
-      case ExpenseCategory.travel:     return AppColors.blue;
-      case ExpenseCategory.movie:      return AppColors.violet;
-      case ExpenseCategory.bills:      return AppColors.rose;
-      case ExpenseCategory.groceries:  return AppColors.emerald;
-      case ExpenseCategory.utilities:  return AppColors.amber;
-      case ExpenseCategory.other:      return AppColors.slate500;
+      case ExpenseCategory.food:
+        return AppColors.primary;
+      case ExpenseCategory.travel:
+        return AppColors.blue;
+      case ExpenseCategory.movie:
+        return AppColors.violet;
+      case ExpenseCategory.bills:
+        return AppColors.rose;
+      case ExpenseCategory.groceries:
+        return AppColors.emerald;
+      case ExpenseCategory.utilities:
+        return AppColors.amber;
+      case ExpenseCategory.other:
+        return AppColors.slate500;
     }
   }
 
   IconData _catIcon(ExpenseCategory cat) {
     switch (cat) {
-      case ExpenseCategory.food:       return Icons.restaurant_rounded;
-      case ExpenseCategory.travel:     return Icons.flight_rounded;
-      case ExpenseCategory.movie:      return Icons.movie_rounded;
-      case ExpenseCategory.bills:      return Icons.receipt_long_rounded;
-      case ExpenseCategory.groceries:  return Icons.local_grocery_store_rounded;
-      case ExpenseCategory.utilities:  return Icons.lightbulb_rounded;
-      case ExpenseCategory.other:      return Icons.more_horiz_rounded;
+      case ExpenseCategory.food:
+        return Icons.restaurant_rounded;
+      case ExpenseCategory.travel:
+        return Icons.flight_rounded;
+      case ExpenseCategory.movie:
+        return Icons.movie_rounded;
+      case ExpenseCategory.bills:
+        return Icons.receipt_long_rounded;
+      case ExpenseCategory.groceries:
+        return Icons.local_grocery_store_rounded;
+      case ExpenseCategory.utilities:
+        return Icons.lightbulb_rounded;
+      case ExpenseCategory.other:
+        return Icons.more_horiz_rounded;
     }
   }
 
@@ -621,9 +674,9 @@ class _ChartSection extends StatelessWidget {
         height: height,
         padding: const EdgeInsets.fromLTRB(12, 16, 12, 12),
         decoration: BoxDecoration(
-          color: const Color(0xFF1A2E2C),
+          color: AppColors.surfaceDark,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.primary.withValues(alpha: 0.1)),
+          border: Border.all(color: AppColors.primary.withValues(alpha: 0.15)),
         ),
         child: child,
       ),

@@ -118,6 +118,8 @@ class _EditGroupScreenState extends State<EditGroupScreen> {
 
   Future<void> _removeMember(AppUser member) async {
     final self = firebaseService.currentUser;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
     if (self?.uid == member.uid) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text("You can't remove yourself from the group."),
@@ -129,14 +131,17 @@ class _EditGroupScreenState extends State<EditGroupScreen> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        backgroundColor: const Color(0xFF1A2E2C),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(18),
+          side: BorderSide(color: isDark ? AppColors.borderDark : AppColors.borderLight),
+        ),
         title: Text('Remove ${member.name}?'),
         content: Text('${member.name} will be removed from this group.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel', style: TextStyle(color: AppColors.slate400)),
+            child: const Text('Cancel', style: TextStyle(color: AppColors.slate500)),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
@@ -177,7 +182,6 @@ class _EditGroupScreenState extends State<EditGroupScreen> {
 
   void _goToAddMember() {
     context.push('/groups/${widget.groupId}/add-member').then((_) {
-      // Reload members after returning from add-member screen
       setState(() => _membersLoading = true);
       _loadGroup();
     });
@@ -185,30 +189,30 @@ class _EditGroupScreenState extends State<EditGroupScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final primaryColor = Theme.of(context).colorScheme.primary;
+    final onPrimaryColor = Theme.of(context).colorScheme.onPrimary;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardBorderColor = isDark ? AppColors.borderDark : AppColors.borderLight;
+    final inputColor = isDark ? Colors.white : AppColors.slate900;
+
     if (_initialLoading) {
       return Scaffold(
-        backgroundColor: AppColors.backgroundDark,
         appBar: AppBar(
-          backgroundColor: AppColors.backgroundDark,
-          surfaceTintColor: Colors.transparent,
           leading: IconButton(
-            icon: const Icon(Icons.close_rounded),
+            icon: Icon(Icons.close_rounded, color: isDark ? Colors.white : AppColors.slate900),
             onPressed: () => context.pop(),
           ),
           title: const Text('Edit Group', style: TextStyle(fontWeight: FontWeight.w700)),
         ),
-        body: const Center(child: CircularProgressIndicator(color: AppColors.primary)),
+        body: Center(child: CircularProgressIndicator(color: primaryColor)),
       );
     }
 
     if (_errorMsg != null) {
       return Scaffold(
-        backgroundColor: AppColors.backgroundDark,
         appBar: AppBar(
-          backgroundColor: AppColors.backgroundDark,
-          surfaceTintColor: Colors.transparent,
           leading: IconButton(
-            icon: const Icon(Icons.close_rounded),
+            icon: Icon(Icons.close_rounded, color: isDark ? Colors.white : AppColors.slate900),
             onPressed: () => context.pop(),
           ),
           title: const Text('Edit Group', style: TextStyle(fontWeight: FontWeight.w700)),
@@ -218,12 +222,9 @@ class _EditGroupScreenState extends State<EditGroupScreen> {
     }
 
     return Scaffold(
-      backgroundColor: AppColors.backgroundDark,
       appBar: AppBar(
-        backgroundColor: AppColors.backgroundDark,
-        surfaceTintColor: Colors.transparent,
         leading: IconButton(
-          icon: const Icon(Icons.close_rounded),
+          icon: Icon(Icons.close_rounded, color: isDark ? Colors.white : AppColors.slate900),
           onPressed: () => context.pop(),
         ),
         title: const Text('Edit Group', style: TextStyle(fontWeight: FontWeight.w700)),
@@ -231,23 +232,23 @@ class _EditGroupScreenState extends State<EditGroupScreen> {
           Padding(
             padding: const EdgeInsets.only(right: 12),
             child: _loading
-                ? const SizedBox(
+                ? SizedBox(
                     width: 22,
                     height: 22,
-                    child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.primary),
+                    child: CircularProgressIndicator(strokeWidth: 2, color: primaryColor),
                   )
                 : TextButton(
                     onPressed: _save,
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
                       decoration: BoxDecoration(
-                        color: AppColors.primary,
+                        color: primaryColor,
                         borderRadius: BorderRadius.circular(20),
                       ),
-                      child: const Text(
+                      child: Text(
                         'Save',
                         style: TextStyle(
-                          color: Colors.black87,
+                          color: onPrimaryColor,
                           fontWeight: FontWeight.w800,
                           fontSize: 14,
                         ),
@@ -263,7 +264,7 @@ class _EditGroupScreenState extends State<EditGroupScreen> {
           // ── Group icon ─────────────────────────────────────────────────────
           const Text(
             'Group Icon',
-            style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: AppColors.slate300),
+            style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: AppColors.slate500),
           ),
           const SizedBox(height: 12),
           SizedBox(
@@ -283,19 +284,17 @@ class _EditGroupScreenState extends State<EditGroupScreen> {
                     height: 62,
                     decoration: BoxDecoration(
                       color: isSelected
-                          ? AppColors.primary.withValues(alpha: 0.2)
-                          : const Color(0xFF1A2E2C),
+                          ? primaryColor.withValues(alpha: 0.15)
+                          : Theme.of(context).colorScheme.surface,
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                        color: isSelected
-                            ? AppColors.primary
-                            : AppColors.primary.withValues(alpha: 0.15),
+                        color: isSelected ? primaryColor : cardBorderColor,
                         width: isSelected ? 2 : 1,
                       ),
                     ),
                     child: Icon(
                       _iconData[ic],
-                      color: isSelected ? AppColors.primary : AppColors.slate500,
+                      color: isSelected ? primaryColor : AppColors.slate500,
                       size: 26,
                     ),
                   ),
@@ -309,18 +308,28 @@ class _EditGroupScreenState extends State<EditGroupScreen> {
           // ── Group name ──────────────────────────────────────────────────────
           const Text(
             'Group Name',
-            style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: AppColors.slate300),
+            style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: AppColors.slate500),
           ),
           const SizedBox(height: 8),
           TextField(
             controller: _nameCtrl,
-            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 16),
+            style: TextStyle(color: inputColor, fontWeight: FontWeight.w600, fontSize: 16),
             textCapitalization: TextCapitalization.words,
             decoration: InputDecoration(
               hintText: 'Group name',
               prefixIcon: Icon(
                 _iconData[_selectedIcon] ?? Icons.group_rounded,
-                color: AppColors.primary,
+                color: primaryColor,
+              ),
+              fillColor: isDark ? AppColors.surfaceDark : AppColors.slate100.withValues(alpha: 0.5),
+              filled: true,
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: cardBorderColor),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: primaryColor, width: 2),
               ),
             ),
           ),
@@ -333,7 +342,7 @@ class _EditGroupScreenState extends State<EditGroupScreen> {
             children: [
               Text(
                 'Members (${_members.length})',
-                style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: AppColors.slate300),
+                style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: AppColors.slate500),
               ),
               // Add Member button
               GestureDetector(
@@ -341,18 +350,18 @@ class _EditGroupScreenState extends State<EditGroupScreen> {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withValues(alpha: 0.15),
+                    color: primaryColor.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: AppColors.primary.withValues(alpha: 0.4)),
+                    border: Border.all(color: primaryColor.withValues(alpha: 0.4)),
                   ),
-                  child: const Row(
+                  child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.person_add_rounded, size: 14, color: AppColors.primary),
-                      SizedBox(width: 5),
+                      Icon(Icons.person_add_rounded, size: 14, color: primaryColor),
+                      const SizedBox(width: 5),
                       Text(
                         'Add Member',
-                        style: TextStyle(color: AppColors.primary, fontSize: 12, fontWeight: FontWeight.w700),
+                        style: TextStyle(color: primaryColor, fontSize: 12, fontWeight: FontWeight.w700),
                       ),
                     ],
                   ),
@@ -363,9 +372,9 @@ class _EditGroupScreenState extends State<EditGroupScreen> {
           const SizedBox(height: 12),
 
           if (_membersLoading)
-            const Center(child: CircularProgressIndicator(color: AppColors.primary))
+            Center(child: CircularProgressIndicator(color: primaryColor))
           else if (_members.isEmpty)
-            const Text('No members found', style: TextStyle(color: AppColors.slate400))
+            const Text('No members found', style: TextStyle(color: AppColors.slate500))
           else
             ...(_members.map((member) {
               final isMe = firebaseService.currentUser?.uid == member.uid;
@@ -373,9 +382,9 @@ class _EditGroupScreenState extends State<EditGroupScreen> {
                 margin: const EdgeInsets.only(bottom: 10),
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF1A2E2C),
+                  color: Theme.of(context).colorScheme.surface,
                   borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: AppColors.primary.withValues(alpha: 0.1)),
+                  border: Border.all(color: cardBorderColor),
                 ),
                 child: Row(
                   children: [
@@ -386,8 +395,8 @@ class _EditGroupScreenState extends State<EditGroupScreen> {
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
-                            isMe ? AppColors.primary : const Color(0xFF2C3E50),
-                            isMe ? AppColors.primary.withValues(alpha: 0.6) : const Color(0xFF34495E),
+                            isMe ? primaryColor : (isDark ? AppColors.slate800 : AppColors.slate100),
+                            isMe ? primaryColor.withValues(alpha: 0.6) : (isDark ? AppColors.slate700 : AppColors.slate300),
                           ],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
@@ -400,7 +409,7 @@ class _EditGroupScreenState extends State<EditGroupScreen> {
                           style: TextStyle(
                             fontWeight: FontWeight.w800,
                             fontSize: 16,
-                            color: isMe ? Colors.black87 : Colors.white,
+                            color: isMe ? Colors.white : (isDark ? Colors.white : AppColors.slate800),
                           ),
                         ),
                       ),
@@ -414,19 +423,23 @@ class _EditGroupScreenState extends State<EditGroupScreen> {
                             children: [
                               Text(
                                 member.name,
-                                style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w700, 
+                                  fontSize: 15,
+                                  color: isDark ? Colors.white : AppColors.slate900,
+                                ),
                               ),
                               if (isMe)
                                 Container(
                                   margin: const EdgeInsets.only(left: 8),
                                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                                   decoration: BoxDecoration(
-                                    color: AppColors.primary.withValues(alpha: 0.15),
+                                    color: primaryColor.withValues(alpha: 0.15),
                                     borderRadius: BorderRadius.circular(8),
                                   ),
-                                  child: const Text(
+                                  child: Text(
                                     'You',
-                                    style: TextStyle(color: AppColors.primary, fontSize: 11, fontWeight: FontWeight.w700),
+                                    style: TextStyle(color: primaryColor, fontSize: 11, fontWeight: FontWeight.w700),
                                   ),
                                 ),
                             ],
@@ -434,7 +447,7 @@ class _EditGroupScreenState extends State<EditGroupScreen> {
                           const SizedBox(height: 2),
                           Text(
                             member.email,
-                            style: const TextStyle(color: AppColors.slate400, fontSize: 13),
+                            style: const TextStyle(color: AppColors.slate500, fontSize: 13),
                           ),
                         ],
                       ),
@@ -477,11 +490,15 @@ class _EditGroupScreenState extends State<EditGroupScreen> {
   }
 
   void _showDeleteConfirm() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        backgroundColor: const Color(0xFF1A2E2C),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(18),
+          side: BorderSide(color: isDark ? AppColors.borderDark : AppColors.borderLight),
+        ),
         title: const Text('Delete Group?'),
         content: const Text(
           'This will permanently delete the group and all its expenses. This cannot be undone.',
@@ -489,7 +506,7 @@ class _EditGroupScreenState extends State<EditGroupScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel', style: TextStyle(color: AppColors.slate400)),
+            child: const Text('Cancel', style: TextStyle(color: AppColors.slate500)),
           ),
           ElevatedButton(
             onPressed: () async {

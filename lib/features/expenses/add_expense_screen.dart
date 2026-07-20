@@ -2,11 +2,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import '../../core/theme.dart';
 import '../../core/providers.dart';
 import '../../core/models.dart';
 import '../../core/firebase_service.dart';
 import '../../shared/widgets.dart';
+import '../../shared/shooting_stars_grid.dart';
 
 class AddExpenseScreen extends ConsumerStatefulWidget {
   final String groupId;
@@ -25,13 +27,13 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
   bool _loading = false;
 
   final _categoryIcons = {
-    ExpenseCategory.food: (Icons.restaurant_rounded, 'Food'),
-    ExpenseCategory.travel: (Icons.flight_rounded, 'Travel'),
-    ExpenseCategory.movie: (Icons.movie_rounded, 'Movie'),
-    ExpenseCategory.bills: (Icons.receipt_long_rounded, 'Bills'),
-    ExpenseCategory.groceries: (Icons.local_grocery_store_rounded, 'Grocery'),
-    ExpenseCategory.utilities: (Icons.lightbulb_rounded, 'Utilities'),
-    ExpenseCategory.other: (Icons.more_horiz_rounded, 'Other'),
+    ExpenseCategory.food: (LucideIcons.utensils, 'Food'),
+    ExpenseCategory.travel: (LucideIcons.plane, 'Travel'),
+    ExpenseCategory.movie: (LucideIcons.film, 'Movie'),
+    ExpenseCategory.bills: (LucideIcons.fileText, 'Bills'),
+    ExpenseCategory.groceries: (LucideIcons.shoppingCart, 'Grocery'),
+    ExpenseCategory.utilities: (LucideIcons.zap, 'Utilities'),
+    ExpenseCategory.other: (LucideIcons.moreHorizontal, 'Other'),
   };
 
   @override
@@ -78,160 +80,212 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
     final uid = firebaseService.currentUser?.uid ?? '';
     _paidBy ??= uid;
 
+    final primaryColor = Theme.of(context).colorScheme.primary;
+    final onPrimaryColor = Theme.of(context).colorScheme.onPrimary;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardBorderColor = isDark ? AppColors.borderDark : AppColors.borderLight;
+    final textThemeColor = isDark ? Colors.white : AppColors.slate900;
+    final inputColor = isDark ? Colors.white : AppColors.slate900;
+
     return Scaffold(
-      backgroundColor: AppColors.backgroundDark,
       appBar: AppBar(
-        backgroundColor: AppColors.backgroundDark,
-        leading: IconButton(icon: const Icon(Icons.close_rounded), onPressed: () => context.pop()),
-        title: const Text('Rapid Entry'),
-        actions: [IconButton(icon: const Icon(Icons.history_rounded, color: AppColors.primary), onPressed: () => context.go('/history'))],
-        surfaceTintColor: Colors.transparent,
+        leading: IconButton(
+          icon: Icon(LucideIcons.x, color: textThemeColor), 
+          onPressed: () => context.pop(),
+        ),
+        title: const Text('Rapid Entry', style: TextStyle(fontWeight: FontWeight.w800)),
+        actions: [
+          IconButton(
+            icon: Icon(LucideIcons.history, color: isDark ? AppColors.cyan : AppColors.primaryDark), 
+            onPressed: () => context.go('/history'),
+          ),
+        ],
+        backgroundColor: Colors.transparent,
       ),
-      body: ListView(padding: const EdgeInsets.all(16), children: [
-        // Amount + Paid By
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(color: AppColors.primary.withValues(alpha: 0.05), borderRadius: BorderRadius.circular(16), border: Border.all(color: AppColors.primary.withValues(alpha: 0.15))),
-          child: Row(children: [
-            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              const Text('TOTAL AMOUNT', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: AppColors.primary, letterSpacing: 1.5)),
-              const SizedBox(height: 6),
-              Row(children: [
-                const Text('₹', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w700, color: AppColors.primary)),
-                const SizedBox(width: 6),
-                Expanded(
-                  child: TextField(
-                    controller: _amount,
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                    autofocus: true,
-                    style: const TextStyle(fontSize: 30, fontWeight: FontWeight.w800, color: Colors.white),
-                    decoration: const InputDecoration(hintText: '0.00', hintStyle: TextStyle(color: AppColors.slate700), border: InputBorder.none, contentPadding: EdgeInsets.zero, isDense: true),
+      body: ShootingStarsGrid(
+        padding: EdgeInsets.zero,
+        child: ListView(padding: const EdgeInsets.all(16), children: [
+          // Amount + Paid By
+          GlassCard(
+            padding: const EdgeInsets.all(16),
+            child: Row(children: [
+              Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text('TOTAL AMOUNT', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: isDark ? AppColors.cyan : AppColors.primaryDark, letterSpacing: 1.5)),
+                const SizedBox(height: 6),
+                Row(children: [
+                  Text(ref.watch(currencySymbolProvider), style: TextStyle(fontSize: 24, fontWeight: FontWeight.w800, color: isDark ? AppColors.cyan : AppColors.primaryDark)),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: TextField(
+                      controller: _amount,
+                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      autofocus: true,
+                      style: TextStyle(fontSize: 30, fontWeight: FontWeight.w800, color: textThemeColor),
+                      decoration: const InputDecoration(
+                        hintText: '0.00', 
+                        hintStyle: TextStyle(color: AppColors.slate500), 
+                        border: InputBorder.none, 
+                        enabledBorder: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        contentPadding: EdgeInsets.zero, 
+                        isDense: true,
+                        fillColor: Colors.transparent,
+                      ),
+                    ),
                   ),
-                ),
-              ]),
-            ])),
-            Container(width: 1, height: 40, color: AppColors.primary.withValues(alpha: 0.2)),
-            const SizedBox(width: 16),
-            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              const Text('PAID BY', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: AppColors.primary, letterSpacing: 1.5)),
-              const SizedBox(height: 6),
-              DropdownButton<String>(
-                value: _paidBy,
-                underline: const SizedBox(),
-                dropdownColor: const Color(0xFF1A2E2C),
-                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 14),
-                items: [
-                  DropdownMenuItem(value: uid, child: const Text('You')),
-                  if (group != null) ...group.memberIds.where((m) => m != uid).map((m) => DropdownMenuItem(value: m, child: const Text('Member'))),
-                ],
-                onChanged: (v) => setState(() => _paidBy = v),
-              ),
-            ])),
-          ]),
-        ),
-        const SizedBox(height: 20),
-
-        // Category
-        const Text('CATEGORY', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.slate500, letterSpacing: 1.5)),
-        const SizedBox(height: 10),
-        GridView.extent(
-          maxCrossAxisExtent: 90, shrinkWrap: true, physics: const NeverScrollableScrollPhysics(),
-          mainAxisSpacing: 8, crossAxisSpacing: 8, childAspectRatio: 1.1,
-          children: _categoryIcons.entries.map((e) {
-            final isSelected = _category == e.key;
-            return GestureDetector(
-              onTap: () => setState(() => _category = e.key),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                decoration: BoxDecoration(
-                  color: isSelected ? AppColors.primary.withValues(alpha: 0.15) : const Color(0xFF1A2E2C),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: isSelected ? AppColors.primary : AppColors.primary.withValues(alpha: 0.1), width: isSelected ? 2 : 1),
-                ),
-                child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                  Icon(e.value.$1, color: isSelected ? AppColors.primary : AppColors.slate500, size: 22),
-                  const SizedBox(height: 4),
-                  Text(e.value.$2, style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: isSelected ? AppColors.primary : AppColors.slate500)),
                 ]),
-              ),
-            );
-          }).toList(),
-        ),
-        const SizedBox(height: 20),
-
-        // Description + Date
-        Row(children: [
-          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const Text('DESCRIPTION', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.slate500, letterSpacing: 1.5)),
-            const SizedBox(height: 8),
-            TextField(controller: _desc, style: const TextStyle(color: Colors.white),
-              decoration: const InputDecoration(hintText: 'Dinner, tickets...', isDense: true)),
-          ])),
-          const SizedBox(width: 12),
-          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const Text('DATE', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.slate500, letterSpacing: 1.5)),
-            const SizedBox(height: 8),
-            InkWell(
-              onTap: () async {
-                final d = await showDatePicker(context: context, initialDate: _date, firstDate: DateTime(2020), lastDate: DateTime.now());
-                if (d != null) setState(() => _date = d);
-              },
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-                decoration: BoxDecoration(color: AppColors.primary.withValues(alpha: 0.05), borderRadius: BorderRadius.circular(12), border: Border.all(color: AppColors.primary.withValues(alpha: 0.15))),
-                child: Row(children: [
-                  const Icon(Icons.calendar_today_rounded, size: 16, color: AppColors.primary),
-                  const SizedBox(width: 8),
-                  Text('${_date.day}/${_date.month}', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 14)),
-                ]),
-              ),
-            ),
-          ])),
-        ]),
-        const SizedBox(height: 20),
-
-        // Split Type
-        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          const Text('SPLIT TYPE', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.slate500, letterSpacing: 1.5)),
-          Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-            decoration: BoxDecoration(color: AppColors.primary.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(20)),
-            child: Text(_splitType.name[0].toUpperCase() + _splitType.name.substring(1), style: const TextStyle(color: AppColors.primary, fontSize: 11, fontWeight: FontWeight.w700))),
-        ]),
-        const SizedBox(height: 10),
-        Row(children: SplitType.values.map((st) {
-          final isSelected = _splitType == st;
-          final icons = [Icons.balance_rounded, Icons.format_list_numbered_rounded, Icons.percent_rounded];
-          final labels = ['Equal', 'Unequal', '%'];
-          final idx = SplitType.values.indexOf(st);
-          return Expanded(
-            child: Padding(
-              padding: EdgeInsets.only(right: idx < 2 ? 8 : 0),
-              child: GestureDetector(
-                onTap: () => setState(() => _splitType = st),
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  decoration: BoxDecoration(
-                    color: isSelected ? AppColors.primary : const Color(0xFF1A2E2C),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: isSelected ? AppColors.primary : AppColors.primary.withValues(alpha: 0.15)),
-                  ),
-                  child: Column(children: [
-                    Icon(icons[idx], size: 18, color: isSelected ? AppColors.backgroundDark : AppColors.slate400),
+              ])),
+              Container(width: 1, height: 40, color: primaryColor.withValues(alpha: 0.2)),
+              const SizedBox(width: 16),
+              Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text('PAID BY', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: isDark ? AppColors.cyan : AppColors.primaryDark, letterSpacing: 1.5)),
+                const SizedBox(height: 6),
+                DropdownButton<String>(
+                  isExpanded: true,
+                  value: _paidBy,
+                  underline: const SizedBox(),
+                  dropdownColor: Theme.of(context).colorScheme.surface,
+                  style: TextStyle(color: textThemeColor, fontWeight: FontWeight.w700, fontSize: 14),
+                  items: [
+                    DropdownMenuItem(value: uid, child: const Text('You')),
+                    if (group != null) ...group.memberIds.where((m) => m != uid).map((m) => DropdownMenuItem(value: m, child: const Text('Member'))),
+                  ],
+                  onChanged: (v) => setState(() => _paidBy = v),
+                ),
+              ])),
+            ]),
+          ),
+          const SizedBox(height: 20),
+  
+          // Category
+          Text('CATEGORY', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: isDark ? AppColors.slate300 : AppColors.slate600, letterSpacing: 1.5)),
+          const SizedBox(height: 10),
+          GridView.extent(
+            maxCrossAxisExtent: 90, shrinkWrap: true, physics: const NeverScrollableScrollPhysics(),
+            mainAxisSpacing: 8, crossAxisSpacing: 8, childAspectRatio: 1.1,
+            children: _categoryIcons.entries.map((e) {
+              final isSelected = _category == e.key;
+              final activeText = isDark ? AppColors.cyan : AppColors.primaryDark;
+              return GestureDetector(
+                onTap: () => setState(() => _category = e.key),
+                child: GlassCard(
+                  bgColor: isSelected ? primaryColor.withValues(alpha: 0.18) : null,
+                  border: Border.all(color: isSelected ? primaryColor : cardBorderColor.withValues(alpha: 0.25), width: isSelected ? 2 : 1),
+                  child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                    Icon(e.value.$1, color: isSelected ? activeText : AppColors.slate500, size: 22),
                     const SizedBox(height: 4),
-                    Text(labels[idx], style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: isSelected ? AppColors.backgroundDark : AppColors.slate400)),
+                    Text(e.value.$2, style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: isSelected ? activeText : AppColors.slate500)),
+                  ]),
+                ),
+              );
+            }).toList(),
+          ),
+          const SizedBox(height: 20),
+  
+          // Description + Date
+          Row(children: [
+            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text('DESCRIPTION', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: isDark ? AppColors.slate300 : AppColors.slate600, letterSpacing: 1.5)),
+              const SizedBox(height: 8),
+              TextField(
+                controller: _desc, 
+                style: TextStyle(color: inputColor, fontSize: 15, fontWeight: FontWeight.w600),
+                decoration: InputDecoration(
+                  hintText: 'Dinner, tickets...', 
+                  isDense: true,
+                  fillColor: isDark ? AppColors.surfaceDark : AppColors.slate100.withValues(alpha: 0.5),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: cardBorderColor.withValues(alpha: 0.25)),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: primaryColor, width: 2),
+                  ),
+                ),
+              ),
+            ])),
+            const SizedBox(width: 12),
+            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text('DATE', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: isDark ? AppColors.slate300 : AppColors.slate600, letterSpacing: 1.5)),
+              const SizedBox(height: 8),
+              InkWell(
+                onTap: () async {
+                  final d = await showDatePicker(
+                    context: context, 
+                    initialDate: _date, 
+                    firstDate: DateTime(2020), 
+                    lastDate: DateTime.now(),
+                    builder: (context, child) {
+                      return Theme(
+                        data: Theme.of(context).copyWith(
+                          colorScheme: Theme.of(context).colorScheme.copyWith(
+                            primary: primaryColor,
+                            onPrimary: Colors.black,
+                            surface: Theme.of(context).colorScheme.surface,
+                          ),
+                        ),
+                        child: child!,
+                      );
+                    },
+                  );
+                  if (d != null) setState(() => _date = d);
+                },
+                child: GlassCard(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                  border: Border.all(color: cardBorderColor.withValues(alpha: 0.25)),
+                  child: Row(children: [
+                    Icon(LucideIcons.calendar, size: 16, color: isDark ? AppColors.cyan : AppColors.primaryDark),
+                    const SizedBox(width: 8),
+                    Text('${_date.day}/${_date.month}', style: TextStyle(color: textThemeColor, fontWeight: FontWeight.w700, fontSize: 14)),
                   ]),
                 ),
               ),
-            ),
-          );
-        }).toList()),
-        const SizedBox(height: 100),
-      ]),
+            ])),
+          ]),
+          const SizedBox(height: 20),
+  
+          // Split Type
+          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+            Text('SPLIT TYPE', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: isDark ? AppColors.slate300 : AppColors.slate600, letterSpacing: 1.5)),
+            Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+              decoration: BoxDecoration(color: primaryColor.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(20)),
+              child: Text(_splitType.name[0].toUpperCase() + _splitType.name.substring(1), style: TextStyle(color: isDark ? AppColors.cyan : AppColors.primaryDark, fontSize: 11, fontWeight: FontWeight.w800))),
+          ]),
+          const SizedBox(height: 10),
+          Row(children: SplitType.values.map((st) {
+            final isSelected = _splitType == st;
+            final icons = [LucideIcons.scale, LucideIcons.listOrdered, LucideIcons.percent];
+            final labels = ['Equal', 'Unequal', '%'];
+            final idx = SplitType.values.indexOf(st);
+            return Expanded(
+              child: Padding(
+                padding: EdgeInsets.only(right: idx < 2 ? 8 : 0),
+                child: GestureDetector(
+                  onTap: () => setState(() => _splitType = st),
+                  child: GlassCard(
+                    bgColor: isSelected ? primaryColor : null,
+                    border: Border.all(color: isSelected ? primaryColor : cardBorderColor.withValues(alpha: 0.25)),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      child: Column(children: [
+                        Icon(icons[idx], size: 18, color: isSelected ? onPrimaryColor : AppColors.slate500),
+                        const SizedBox(height: 4),
+                        Text(labels[idx], style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: isSelected ? onPrimaryColor : AppColors.slate500)),
+                      ]),
+                    ),
+                  ),
+                ),
+              ),
+            );
+          }).toList()),
+          const SizedBox(height: 100),
+        ]),
+      ),
       bottomNavigationBar: SafeArea(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-          child: PrimaryButton(label: 'Save Expense', icon: Icons.check_circle_rounded, onPressed: _loading ? null : _save, loading: _loading),
+          child: PrimaryButton(label: 'Save Expense', icon: LucideIcons.check, onPressed: _loading ? null : _save, loading: _loading),
         ),
       ),
     );

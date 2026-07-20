@@ -15,6 +15,8 @@ import '../features/analytics/analytics_screen.dart';
 import '../features/history/history_screen.dart';
 import '../features/reminders/reminders_screen.dart';
 import '../features/settings/settings_screen.dart';
+import '../features/settings/help_faq_screen.dart';
+import '../features/settings/currency_settings_screen.dart';
 import '../features/splash/splash_screen.dart';
 import '../shared/main_shell.dart';
 
@@ -42,7 +44,20 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(path: '/analytics', builder: (c, s) => const AnalyticsScreen()),
           GoRoute(path: '/history', builder: (c, s) => const HistoryScreen()),
           GoRoute(path: '/reminders', builder: (c, s) => const RemindersScreen()),
-          GoRoute(path: '/settings', builder: (c, s) => const SettingsScreen()),
+          GoRoute(
+            path: '/settings',
+            builder: (c, s) => const SettingsScreen(),
+            routes: [
+              GoRoute(
+                path: 'help',
+                builder: (c, s) => const HelpFaqScreen(),
+              ),
+              GoRoute(
+                path: 'currency',
+                builder: (c, s) => const CurrencySettingsScreen(),
+              ),
+            ],
+          ),
         ],
       ),
       GoRoute(path: '/groups/create', builder: (c, s) => const CreateGroupScreen()),

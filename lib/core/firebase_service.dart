@@ -168,6 +168,7 @@ class FirebaseService {
         'email': email,
         'emailLower': email.toLowerCase(),
         'photoUrl': user.photoURL,
+        'currency': 'INR',
         'createdAt': FieldValue.serverTimestamp(),
       };
       // Only store phone if non-empty so queries don't match blank fields
@@ -194,6 +195,7 @@ class FirebaseService {
     String? name,
     String? phone,
     String? upiId,
+    String? currency,
   }) async {
     final updates = <String, dynamic>{};
     if (name != null && name.isNotEmpty) {
@@ -207,6 +209,9 @@ class FirebaseService {
     }
     if (upiId != null) {
       updates['upiId'] = upiId.trim();
+    }
+    if (currency != null) {
+      updates['currency'] = currency;
     }
     if (updates.isNotEmpty) {
       await _db.collection('users').doc(uid).update(updates);
@@ -291,34 +296,61 @@ class FirebaseService {
 
   Map<String, Map<String, double>> calculateBalances(
     List<Expense> expenses,
+    List<Settlement> settlements,
     List<String> memberIds,
   ) {
     final Map<String, Map<String, double>> debts = {};
     for (final m in memberIds) {
       debts[m] = {};
+      for (final other in memberIds) {
+        if (m != other) {
+          debts[m]![other] = 0.0;
+        }
+      }
     }
     for (final exp in expenses) {
       if (exp.participants.isEmpty) continue;
       final share = exp.amount / exp.participants.length;
       for (final p in exp.participants) {
         if (p == exp.paidBy) continue;
-        debts[p] ??= {};
-        debts[p]![exp.paidBy] = (debts[p]![exp.paidBy] ?? 0) + share;
+        if (debts[p] != null && debts[p]![exp.paidBy] != null) {
+          debts[p]![exp.paidBy] = debts[p]![exp.paidBy]! + share;
+        }
+      }
+    }
+    for (final setl in settlements) {
+      final from = setl.from;
+      final to = setl.to;
+      final amt = setl.amount;
+      if (debts[from] != null && debts[from]![to] != null) {
+        debts[from]![to] = debts[from]![to]! - amt;
+      }
+    }
+    // Resolve negative debts
+    for (final a in memberIds) {
+      for (final b in memberIds) {
+        if (a == b) continue;
+        final ab = debts[a]?[b] ?? 0.0;
+        if (ab < 0) {
+          debts[b] ??= {};
+          debts[b]![a] = (debts[b]![a] ?? 0.0) - ab;
+          debts[a]![b] = 0.0;
+        }
       }
     }
     // Simplify mutual debts
     for (final a in memberIds) {
       for (final b in memberIds) {
         if (a == b) continue;
-        final ab = debts[a]?[b] ?? 0;
-        final ba = debts[b]?[a] ?? 0;
+        final ab = debts[a]?[b] ?? 0.0;
+        final ba = debts[b]?[a] ?? 0.0;
         if (ab > 0 && ba > 0) {
           if (ab > ba) {
             debts[a]![b] = ab - ba;
-            debts[b]![a] = 0;
+            debts[b]![a] = 0.0;
           } else {
             debts[b]![a] = ba - ab;
-            debts[a]![b] = 0;
+            debts[a]![b] = 0.0;
           }
         }
       }
@@ -326,8 +358,8 @@ class FirebaseService {
     return debts;
   }
 
-  double userNetBalance(List<Expense> expenses, String uid) {
-    double balance = 0;
+  double userNetBalance(List<Expense> expenses, List<Settlement> settlements, String uid) {
+    double balance = 0.0;
     for (final exp in expenses) {
       if (exp.participants.isEmpty) continue;
       final share = exp.amount / exp.participants.length;
@@ -336,6 +368,13 @@ class FirebaseService {
         balance += others * share;
       } else if (exp.participants.contains(uid)) {
         balance -= share;
+      }
+    }
+    for (final setl in settlements) {
+      if (setl.from == uid) {
+        balance += setl.amount;
+      } else if (setl.to == uid) {
+        balance -= setl.amount;
       }
     }
     return balance;

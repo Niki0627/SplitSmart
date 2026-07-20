@@ -2,11 +2,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import '../../core/theme.dart';
 import '../../core/providers.dart';
 import '../../core/models.dart';
 import '../../core/firebase_service.dart';
 import '../../shared/widgets.dart';
+import '../../shared/shooting_stars_grid.dart';
 
 class CalculateTallyScreen extends ConsumerWidget {
   final String groupId;
@@ -17,6 +19,8 @@ class CalculateTallyScreen extends ConsumerWidget {
     final groupAsync = ref.watch(groupsProvider).whenData(
         (gs) => gs.firstWhere((g) => g.id == groupId, orElse: () => gs.first));
     final expensesAsync = ref.watch(groupExpensesProvider(groupId));
+    final settlementsAsync = ref.watch(groupSettlementsProvider(groupId));
+    final currencySymbol = ref.watch(currencySymbolProvider);
 
     final memberIds = groupAsync.value?.memberIds ?? [];
     final membersAsync = ref.watch(groupMembersProvider(memberIds));
@@ -43,175 +47,180 @@ class CalculateTallyScreen extends ConsumerWidget {
       return initialsMap[id] ?? (id.isNotEmpty ? id[0].toUpperCase() : '?');
     }
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textThemeColor = isDark ? Colors.white : AppColors.slate900;
+    final primaryColor = Theme.of(context).colorScheme.primary;
+
     return Scaffold(
-      backgroundColor: AppColors.backgroundDark,
       appBar: AppBar(
-        backgroundColor: AppColors.backgroundDark,
-        leading: IconButton(icon: const Icon(Icons.arrow_back_rounded), onPressed: () => context.pop()),
-        title: const Text('Calculate & Tally'),
+        backgroundColor: Colors.transparent,
+        leading: IconButton(
+          icon: Icon(LucideIcons.arrowLeft, color: textThemeColor), 
+          onPressed: () => context.pop(),
+        ),
+        title: const Text('Calculate & Tally', style: TextStyle(fontWeight: FontWeight.w800)),
         surfaceTintColor: Colors.transparent,
       ),
-      body: expensesAsync.when(
-        data: (expenses) {
-          if (expenses.isEmpty) {
-            return const EmptyState(
-              icon: Icons.receipt_long_rounded,
-              title: 'No expenses',
-              subtitle: 'Add expenses to calculate balances',
-            );
-          }
+      body: ShootingStarsGrid(
+        padding: EdgeInsets.zero,
+        child: expensesAsync.when(
+          data: (expenses) {
+            return settlementsAsync.when(
+              data: (settlements) {
+                if (expenses.isEmpty) {
+                  return const EmptyState(
+                    icon: LucideIcons.fileText,
+                    title: 'No expenses',
+                    subtitle: 'Add expenses to calculate balances',
+                  );
+                }
 
-          final group = groupAsync.value;
-          final ids = group?.memberIds ?? [uid];
-          final balances = firebaseService.calculateBalances(expenses, ids);
+                final group = groupAsync.value;
+                final ids = group?.memberIds ?? [uid];
+                final balances = firebaseService.calculateBalances(expenses, settlements, ids);
 
-          // Collect all debts
-          final debts = <_Debt>[];
-          for (final from in balances.keys) {
-            for (final to in balances[from]!.keys) {
-              final amt = balances[from]![to]!;
-              if (amt > 0.01) {
-                debts.add(_Debt(from: from, to: to, amount: amt));
-              }
-            }
-          }
+                // Collect all debts
+                final debts = <_Debt>[];
+                for (final from in balances.keys) {
+                  for (final to in balances[from]!.keys) {
+                    final amt = balances[from]![to]!;
+                    if (amt > 0.01) {
+                      debts.add(_Debt(from: from, to: to, amount: amt));
+                    }
+                  }
+                }
 
-          final totalSpent = expenses.fold(0.0, (sum, e) => sum + e.amount);
-          final perPerson = ids.isEmpty ? 0.0 : totalSpent / ids.length;
+                final totalSpent = expenses.fold(0.0, (sum, e) => sum + e.amount);
+                final perPerson = ids.isEmpty ? 0.0 : totalSpent / ids.length;
 
-          return ListView(padding: const EdgeInsets.all(20), children: [
-            // Summary Card
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(colors: [
-                  AppColors.primary.withValues(alpha: 0.15),
-                  AppColors.primary.withValues(alpha: 0.05),
-                ]),
-                borderRadius: BorderRadius.circular(18),
-                border: Border.all(color: AppColors.primary.withValues(alpha: 0.3)),
-              ),
-              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                const Text('GROUP SUMMARY',
-                  style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.primary, letterSpacing: 1.5)),
-                const SizedBox(height: 12),
-                Row(children: [
-                  Expanded(child: _StatBox(label: 'Total Spent', value: '₹${totalSpent.toStringAsFixed(0)}')),
-                  Container(width: 1, height: 40, color: AppColors.primary.withValues(alpha: 0.2)),
-                  Expanded(child: _StatBox(label: 'Per Person', value: '₹${perPerson.toStringAsFixed(0)}')),
-                  Container(width: 1, height: 40, color: AppColors.primary.withValues(alpha: 0.2)),
-                  Expanded(child: _StatBox(label: 'Expenses', value: '${expenses.length}')),
-                ]),
-              ]),
-            ),
-            const SizedBox(height: 24),
-
-            // Who Owes Whom
-            const Text('SETTLEMENTS NEEDED',
-              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700)),
-            const SizedBox(height: 12),
-            if (debts.isEmpty)
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: AppColors.emerald.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: AppColors.emerald.withValues(alpha: 0.3)),
-                ),
-                child: const Row(children: [
-                  Icon(Icons.check_circle_rounded, color: AppColors.emerald, size: 32),
-                  SizedBox(width: 12),
-                  Expanded(child: Text('All settled up! Everyone is even.',
-                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 15))),
-                ]),
-              )
-            else
-              ...debts.map((d) => Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF1A2E2C),
-                    borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: AppColors.primary.withValues(alpha: 0.1)),
-                  ),
-                  child: Row(children: [
-                    UserAvatar(initials: resolveInitials(d.from), size: 40),
-                    const SizedBox(width: 10),
-                    Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      Text(resolveName(d.from),
-                        style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
-                      const Text('owes',
-                        style: TextStyle(color: AppColors.slate500, fontSize: 12)),
-                      Text(resolveName(d.to),
-                        style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
-                    ])),
-                    Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-                      Text('₹${d.amount.toStringAsFixed(0)}',
-                        style: const TextStyle(color: AppColors.rose, fontWeight: FontWeight.w800, fontSize: 18)),
-                      const SizedBox(height: 6),
-                      if (d.from == uid || d.to == uid)
-                        GestureDetector(
-                          onTap: () => context.push('/groups/$groupId/settle'),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: AppColors.primary,
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: const Text('Settle',
-                              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.backgroundDark)),
-                          ),
-                        ),
+                return ListView(padding: const EdgeInsets.all(20), children: [
+                  // Summary Card
+                  GlassCard(
+                    padding: const EdgeInsets.all(20),
+                    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                      Text('GROUP SUMMARY',
+                        style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: isDark ? AppColors.cyan : AppColors.primaryDark, letterSpacing: 1.5)),
+                      const SizedBox(height: 12),
+                      Row(children: [
+                        Expanded(child: _StatBox(label: 'Total Spent', value: '$currencySymbol${totalSpent.toStringAsFixed(0)}')),
+                        Container(width: 1.2, height: 40, color: primaryColor.withValues(alpha: 0.2)),
+                        Expanded(child: _StatBox(label: 'Per Person', value: '$currencySymbol${perPerson.toStringAsFixed(0)}')),
+                        Container(width: 1.2, height: 40, color: primaryColor.withValues(alpha: 0.2)),
+                        Expanded(child: _StatBox(label: 'Expenses', value: '${expenses.length}')),
+                      ]),
                     ]),
-                  ]),
-                ),
-              )),
-
-            const SizedBox(height: 24),
-            const Text('EXPENSE BREAKDOWN',
-              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700)),
-            const SizedBox(height: 12),
-            ...expenses.map((e) => Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: Row(children: [
-                Container(
-                  width: 36, height: 36,
-                  decoration: BoxDecoration(
-                    color: AppColors.primary.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Icon(_catIcon(e.category), color: AppColors.primary, size: 18),
-                ),
-                const SizedBox(width: 12),
-                Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text(e.description,
-                    style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
-                  Text('Paid by ${e.paidBy == uid ? "You" : (nameMap[e.paidBy] ?? e.paidByName)}',
-                    style: const TextStyle(color: AppColors.slate500, fontSize: 12)),
-                ])),
-                Text('₹${e.amount.toStringAsFixed(0)}',
-                  style: const TextStyle(fontWeight: FontWeight.w700, color: AppColors.slate300)),
-              ]),
-            )),
-            const SizedBox(height: 40),
-          ]);
-        },
-        loading: () => const Center(child: CircularProgressIndicator(color: AppColors.primary)),
-        error: (e, _) => Center(child: Text('Error: $e')),
+                  const SizedBox(height: 24),
+
+                  // Who Owes Whom
+                  Text('SETTLEMENTS NEEDED',
+                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: textThemeColor)),
+                  const SizedBox(height: 12),
+                  if (debts.isEmpty)
+                    GlassCard(
+                      bgColor: AppColors.emerald.withValues(alpha: 0.12),
+                      border: Border.all(color: AppColors.emerald.withValues(alpha: 0.35)),
+                      padding: const EdgeInsets.all(20),
+                      child: Row(children: [
+                        const Icon(LucideIcons.checkCircle, color: AppColors.emerald, size: 30),
+                        const SizedBox(width: 14),
+                        Expanded(child: Text('All settled up! Everyone is even.',
+                          style: TextStyle(fontWeight: FontWeight.w800, fontSize: 14, color: textThemeColor))),
+                      ]),
+                    )
+                  else
+                    ...debts.map((d) => Padding(
+                      padding: const EdgeInsets.only(bottom: 10),
+                      child: GlassCard(
+                        padding: const EdgeInsets.all(16),
+                        child: Row(children: [
+                          UserAvatar(initials: resolveInitials(d.from), size: 40),
+                          const SizedBox(width: 12),
+                          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                            Text(resolveName(d.from),
+                              style: TextStyle(fontWeight: FontWeight.w800, fontSize: 14, color: textThemeColor)),
+                            const SizedBox(height: 2),
+                            Text('owes',
+                              style: TextStyle(color: AppColors.slate500, fontSize: 12, fontWeight: FontWeight.w600)),
+                            const SizedBox(height: 2),
+                            Text(resolveName(d.to),
+                              style: TextStyle(fontWeight: FontWeight.w800, fontSize: 14, color: textThemeColor)),
+                          ])),
+                          Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
+                            Text('$currencySymbol${d.amount.toStringAsFixed(0)}',
+                              style: const TextStyle(color: AppColors.rose, fontWeight: FontWeight.w800, fontSize: 18)),
+                            const SizedBox(height: 6),
+                            if (d.from == uid || d.to == uid)
+                              GestureDetector(
+                                onTap: () => context.push('/groups/$groupId/settle'),
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                  decoration: BoxDecoration(
+                                    color: primaryColor,
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: const Text('Settle',
+                                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Colors.black)),
+                                ),
+                              ),
+                          ]),
+                        ]),
+                      ),
+                    )),
+
+                  const SizedBox(height: 24),
+                  Text('EXPENSE BREAKDOWN',
+                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: textThemeColor)),
+                  const SizedBox(height: 12),
+                  ...expenses.map((e) => Padding(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: GlassCard(
+                      padding: const EdgeInsets.all(12),
+                      child: Row(children: [
+                        Container(
+                          width: 38, height: 38,
+                          decoration: BoxDecoration(
+                            color: primaryColor.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Icon(_catIcon(e.category), color: isDark ? AppColors.cyan : AppColors.primaryDark, size: 18),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                          Text(e.description,
+                            style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: textThemeColor)),
+                          const SizedBox(height: 2),
+                          Text('Paid by ${e.paidBy == uid ? "You" : (nameMap[e.paidBy] ?? e.paidByName)}',
+                            style: const TextStyle(color: AppColors.slate500, fontSize: 12, fontWeight: FontWeight.w500)),
+                        ])),
+                        Text('$currencySymbol${e.amount.toStringAsFixed(0)}',
+                          style: TextStyle(fontWeight: FontWeight.w800, color: isDark ? AppColors.slate300 : AppColors.slate700, fontSize: 14)),
+                      ]),
+                    ),
+                  )),
+                  const SizedBox(height: 40),
+                ]);
+              },
+              loading: () => Center(child: CircularProgressIndicator(color: primaryColor)),
+              error: (e, _) => Center(child: Text('Error: $e')),
+            );
+          },
+          loading: () => Center(child: CircularProgressIndicator(color: primaryColor)),
+          error: (e, _) => Center(child: Text('Error: $e')),
+        ),
       ),
     );
   }
 
   IconData _catIcon(ExpenseCategory cat) {
     switch (cat) {
-      case ExpenseCategory.food: return Icons.restaurant;
-      case ExpenseCategory.travel: return Icons.flight;
-      case ExpenseCategory.movie: return Icons.movie;
-      case ExpenseCategory.bills: return Icons.receipt_long;
-      case ExpenseCategory.groceries: return Icons.local_grocery_store;
-      case ExpenseCategory.utilities: return Icons.lightbulb;
-      case ExpenseCategory.other: return Icons.more_horiz;
+      case ExpenseCategory.food: return LucideIcons.utensils;
+      case ExpenseCategory.travel: return LucideIcons.plane;
+      case ExpenseCategory.movie: return LucideIcons.film;
+      case ExpenseCategory.bills: return LucideIcons.fileText;
+      case ExpenseCategory.groceries: return LucideIcons.shoppingCart;
+      case ExpenseCategory.utilities: return LucideIcons.zap;
+      case ExpenseCategory.other: return LucideIcons.moreHorizontal;
     }
   }
 }
@@ -226,9 +235,12 @@ class _StatBox extends StatelessWidget {
   final String label, value;
   const _StatBox({required this.label, required this.value});
   @override
-  Widget build(BuildContext context) => Column(children: [
-    Text(value, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
-    const SizedBox(height: 4),
-    Text(label, style: const TextStyle(fontSize: 11, color: AppColors.slate500)),
-  ]);
+  Widget build(BuildContext context) {
+    final textThemeColor = Theme.of(context).brightness == Brightness.dark ? Colors.white : AppColors.slate900;
+    return Column(children: [
+      Text(value, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: textThemeColor)),
+      const SizedBox(height: 4),
+      Text(label, style: const TextStyle(fontSize: 11, color: AppColors.slate500, fontWeight: FontWeight.w600)),
+    ]);
+  }
 }

@@ -214,23 +214,29 @@ class _AddMemberScreenState extends State<AddMemberScreen> {
   void _showInviteSheet(String query) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: const Color(0xFF1A2E2C),
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      backgroundColor: Colors.transparent,
+      builder: (_) => Container(
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        child: _InviteSheet(query: query),
       ),
-      builder: (_) => _InviteSheet(query: query),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final primaryColor = Theme.of(context).colorScheme.primary;
+    final onPrimaryColor = Theme.of(context).colorScheme.onPrimary;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardBorderColor = isDark ? AppColors.borderDark : AppColors.borderLight;
+    final inputColor = isDark ? Colors.white : AppColors.slate900;
+
     return Scaffold(
-      backgroundColor: AppColors.backgroundDark,
       appBar: AppBar(
-        backgroundColor: AppColors.backgroundDark,
-        surfaceTintColor: Colors.transparent,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded),
+          icon: Icon(Icons.arrow_back_ios_new_rounded, size: 20, color: isDark ? Colors.white : AppColors.slate900),
           onPressed: () => context.pop(),
         ),
         title: const Text(
@@ -242,12 +248,12 @@ class _AddMemberScreenState extends State<AddMemberScreen> {
             Padding(
               padding: const EdgeInsets.only(right: 12),
               child: _adding
-                  ? const SizedBox(
+                  ? SizedBox(
                       width: 22,
                       height: 22,
                       child: CircularProgressIndicator(
                         strokeWidth: 2,
-                        color: AppColors.primary,
+                        color: primaryColor,
                       ),
                     )
                   : TextButton(
@@ -255,13 +261,13 @@ class _AddMemberScreenState extends State<AddMemberScreen> {
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                         decoration: BoxDecoration(
-                          color: AppColors.primary,
+                          color: primaryColor,
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
                           'Add ${_pendingMembers.length}',
-                          style: const TextStyle(
-                            color: Colors.black87,
+                          style: TextStyle(
+                            color: onPrimaryColor,
                             fontWeight: FontWeight.w800,
                             fontSize: 13,
                           ),
@@ -272,7 +278,7 @@ class _AddMemberScreenState extends State<AddMemberScreen> {
         ],
       ),
       body: _loadingGroup
-          ? const Center(child: CircularProgressIndicator(color: AppColors.primary))
+          ? Center(child: CircularProgressIndicator(color: primaryColor))
           : Column(
               children: [
                 // ── Mode toggle (Email / Phone) ───────────────────────────────────────
@@ -308,14 +314,14 @@ class _AddMemberScreenState extends State<AddMemberScreen> {
                     Expanded(
                       child: Container(
                         decoration: BoxDecoration(
-                          color: const Color(0xFF1A2E2C),
+                          color: Theme.of(context).colorScheme.surface,
                           borderRadius: BorderRadius.circular(14),
-                          border: Border.all(color: AppColors.primary.withValues(alpha: 0.25)),
+                          border: Border.all(color: cardBorderColor),
                         ),
                         child: TextField(
                           controller: _searchCtrl,
                           focusNode: _focusNode,
-                          style: const TextStyle(color: Colors.white, fontSize: 16),
+                          style: TextStyle(color: inputColor, fontSize: 16),
                           keyboardType: _searchByPhone
                               ? TextInputType.phone
                               : TextInputType.emailAddress,
@@ -332,7 +338,8 @@ class _AddMemberScreenState extends State<AddMemberScreen> {
                                     child: SizedBox(
                                       width: 18, height: 18,
                                       child: CircularProgressIndicator(
-                                        strokeWidth: 2, color: AppColors.primary,
+                                        strokeWidth: 2,
+                                        color: AppColors.primary,
                                       ),
                                     ),
                                   )
@@ -362,10 +369,10 @@ class _AddMemberScreenState extends State<AddMemberScreen> {
                       child: Container(
                         width: 48, height: 48,
                         decoration: BoxDecoration(
-                          color: AppColors.primary,
+                          color: primaryColor,
                           borderRadius: BorderRadius.circular(14),
                         ),
-                        child: const Icon(Icons.search_rounded, color: Colors.black87, size: 22),
+                        child: Icon(Icons.search_rounded, color: onPrimaryColor, size: 22),
                       ),
                     ),
                   ]),
@@ -397,7 +404,6 @@ class _AddMemberScreenState extends State<AddMemberScreen> {
                 if (_pendingMembers.isNotEmpty)
                   Container(
                     height: 52,
-                    color: AppColors.backgroundDark,
                     child: ListView.separated(
                       scrollDirection: Axis.horizontal,
                       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -406,21 +412,21 @@ class _AddMemberScreenState extends State<AddMemberScreen> {
                       itemBuilder: (_, i) {
                         final m = _pendingMembers[i];
                         return Chip(
-                          backgroundColor: AppColors.primary.withValues(alpha: 0.15),
-                          side: BorderSide(color: AppColors.primary.withValues(alpha: 0.4)),
+                          backgroundColor: primaryColor.withValues(alpha: 0.15),
+                          side: BorderSide(color: primaryColor.withValues(alpha: 0.4)),
                           avatar: CircleAvatar(
-                            backgroundColor: AppColors.primary,
+                            backgroundColor: primaryColor,
                             radius: 11,
                             child: Text(
                               m.initials,
-                              style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w800, color: Colors.black87),
+                              style: TextStyle(fontSize: 9, fontWeight: FontWeight.w800, color: onPrimaryColor),
                             ),
                           ),
                           label: Text(
                             m.name,
-                            style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.w600, fontSize: 13),
+                            style: TextStyle(color: primaryColor, fontWeight: FontWeight.w600, fontSize: 13),
                           ),
-                          deleteIcon: const Icon(Icons.close_rounded, size: 15, color: AppColors.primary),
+                          deleteIcon: Icon(Icons.close_rounded, size: 15, color: primaryColor),
                           onDeleted: () => setState(() => _pendingMembers.removeAt(i)),
                           materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         );
@@ -428,7 +434,7 @@ class _AddMemberScreenState extends State<AddMemberScreen> {
                     ),
                   ),
 
-                const Divider(height: 1, color: Color(0xFF1A2E2C)),
+                Divider(height: 1, color: cardBorderColor),
 
                 // ── Results area ────────────────────────────────────────────────────
                 Expanded(
@@ -489,12 +495,18 @@ class _UserResultCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final blocked = alreadyInGroup || alreadyPending || isCurrentUser;
+    final primaryColor = Theme.of(context).colorScheme.primary;
+    final onPrimaryColor = Theme.of(context).colorScheme.onPrimary;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: const Color(0xFF1A2E2C),
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: AppColors.primary.withValues(alpha: 0.2)),
+        border: Border.all(
+          color: isDark ? AppColors.borderDark : AppColors.borderLight,
+        ),
       ),
       child: Row(
         children: [
@@ -504,7 +516,7 @@ class _UserResultCard extends StatelessWidget {
             height: 54,
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [AppColors.primary, AppColors.primary.withValues(alpha: 0.6)],
+                colors: [primaryColor, primaryColor.withValues(alpha: 0.6)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -513,10 +525,10 @@ class _UserResultCard extends StatelessWidget {
             child: Center(
               child: Text(
                 user.initials,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w800,
-                  color: Colors.black87,
+                  color: onPrimaryColor,
                 ),
               ),
             ),
@@ -528,12 +540,16 @@ class _UserResultCard extends StatelessWidget {
               children: [
                 Text(
                   user.name,
-                  style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+                  style: TextStyle(
+                    fontWeight: FontWeight.w700, 
+                    fontSize: 16,
+                    color: isDark ? Colors.white : AppColors.slate900,
+                  ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   user.email,
-                  style: const TextStyle(color: AppColors.slate400, fontSize: 13),
+                  style: const TextStyle(color: AppColors.slate500, fontSize: 13),
                 ),
                 if (blocked)
                   Padding(
@@ -556,17 +572,17 @@ class _UserResultCard extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [AppColors.primary, Color(0xFF2DD4BF)],
+                  gradient: LinearGradient(
+                    colors: [primaryColor, primaryColor.withValues(alpha: 0.8)],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
                   borderRadius: BorderRadius.circular(24),
                 ),
-                child: const Text(
+                child: Text(
                   'Add',
                   style: TextStyle(
-                    color: Colors.black87,
+                    color: onPrimaryColor,
                     fontWeight: FontWeight.w800,
                     fontSize: 14,
                   ),
@@ -577,10 +593,10 @@ class _UserResultCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
               decoration: BoxDecoration(
-                color: AppColors.slate700,
+                color: isDark ? AppColors.slate700 : AppColors.slate100,
                 borderRadius: BorderRadius.circular(24),
               ),
-              child: const Icon(Icons.check_rounded, size: 18, color: AppColors.slate400),
+              child: Icon(Icons.check_rounded, size: 18, color: isDark ? AppColors.slate400 : AppColors.slate500),
             ),
         ],
       ),
@@ -598,6 +614,10 @@ class _NotFoundView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final primaryColor = Theme.of(context).colorScheme.primary;
+    final onPrimaryColor = Theme.of(context).colorScheme.onPrimary;
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
       child: Column(
@@ -613,24 +633,28 @@ class _NotFoundView extends StatelessWidget {
             child: const Icon(Icons.person_search_rounded, size: 38, color: AppColors.rose),
           ),
           const SizedBox(height: 20),
-          const Text(
+          Text(
             'No user found',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+            style: TextStyle(
+              fontSize: 20, 
+              fontWeight: FontWeight.w700,
+              color: isDark ? Colors.white : AppColors.slate900,
+            ),
           ),
           const SizedBox(height: 8),
           Text(
             '"$query" doesn\'t match any SplitSmart account.',
             textAlign: TextAlign.center,
-            style: const TextStyle(color: AppColors.slate400, fontSize: 14),
+            style: const TextStyle(color: AppColors.slate500, fontSize: 14),
           ),
           const SizedBox(height: 32),
           // Invite card
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: const Color(0xFF1A2E2C),
+              color: Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(18),
-              border: Border.all(color: AppColors.primary.withValues(alpha: 0.2)),
+              border: Border.all(color: isDark ? AppColors.borderDark : AppColors.borderLight),
             ),
             child: Column(
               children: [
@@ -640,24 +664,28 @@ class _NotFoundView extends StatelessWidget {
                       width: 48,
                       height: 48,
                       decoration: BoxDecoration(
-                        color: AppColors.primary.withValues(alpha: 0.15),
+                        color: primaryColor.withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(14),
                       ),
-                      child: const Icon(Icons.send_rounded, color: AppColors.primary, size: 22),
+                      child: Icon(Icons.send_rounded, color: primaryColor, size: 22),
                     ),
                     const SizedBox(width: 14),
-                    const Expanded(
+                    Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             'Invite to SplitSmart',
-                            style: TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
+                            style: TextStyle(
+                              fontWeight: FontWeight.w700, 
+                              fontSize: 15,
+                              color: isDark ? Colors.white : AppColors.slate900,
+                            ),
                           ),
-                          SizedBox(height: 2),
-                          Text(
+                          const SizedBox(height: 2),
+                          const Text(
                             "They'll get a link to download the app",
-                            style: TextStyle(color: AppColors.slate400, fontSize: 13),
+                            style: TextStyle(color: AppColors.slate500, fontSize: 13),
                           ),
                         ],
                       ),
@@ -675,8 +703,8 @@ class _NotFoundView extends StatelessWidget {
                       style: TextStyle(fontWeight: FontWeight.w700),
                     ),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      foregroundColor: Colors.black87,
+                      backgroundColor: primaryColor,
+                      foregroundColor: onPrimaryColor,
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
@@ -696,6 +724,9 @@ class _NotFoundView extends StatelessWidget {
 class _SearchTipsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final primaryColor = Theme.of(context).colorScheme.primary;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
       child: Column(
@@ -705,37 +736,44 @@ class _SearchTipsView extends StatelessWidget {
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.1),
+              color: primaryColor.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.group_add_rounded, size: 38, color: AppColors.primary),
+            child: Icon(Icons.group_add_rounded, size: 38, color: primaryColor),
           ),
           const SizedBox(height: 20),
-          const Text(
+          Text(
             'Find people on SplitSmart',
-            style: TextStyle(fontSize: 19, fontWeight: FontWeight.w700),
+            style: TextStyle(
+              fontSize: 19, 
+              fontWeight: FontWeight.w700,
+              color: isDark ? Colors.white : AppColors.slate900,
+            ),
           ),
           const SizedBox(height: 8),
           const Text(
             'Search using their registered email or phone number.',
             textAlign: TextAlign.center,
-            style: TextStyle(color: AppColors.slate400, fontSize: 14),
+            style: TextStyle(color: AppColors.slate500, fontSize: 14),
           ),
           const SizedBox(height: 32),
           // Tip cards
           _tipCard(
+            context,
             icon: Icons.email_outlined,
             title: 'Search by Email',
             subtitle: 'e.g. friend@gmail.com',
           ),
           const SizedBox(height: 12),
           _tipCard(
+            context,
             icon: Icons.phone_outlined,
             title: 'Search by Phone',
             subtitle: 'e.g. +91 98765 43210',
           ),
           const SizedBox(height: 12),
           _tipCard(
+            context,
             icon: Icons.send_rounded,
             title: 'Not on SplitSmart yet?',
             subtitle: "Search their contact and we'll send an invite",
@@ -745,13 +783,17 @@ class _SearchTipsView extends StatelessWidget {
     );
   }
 
-  Widget _tipCard({required IconData icon, required String title, required String subtitle}) {
+  Widget _tipCard(BuildContext context, {required IconData icon, required String title, required String subtitle}) {
+    final primaryColor = Theme.of(context).colorScheme.primary;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textThemeColor = isDark ? Colors.white : AppColors.slate900;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
-        color: const Color(0xFF1A2E2C),
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.primary.withValues(alpha: 0.1)),
+        border: Border.all(color: isDark ? AppColors.borderDark : AppColors.borderLight),
       ),
       child: Row(
         children: [
@@ -759,18 +801,25 @@ class _SearchTipsView extends StatelessWidget {
             width: 42,
             height: 42,
             decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.12),
+              color: primaryColor.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(icon, color: AppColors.primary, size: 20),
+            child: Icon(icon, color: primaryColor, size: 20),
           ),
           const SizedBox(width: 14),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(title, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
+              Text(
+                title, 
+                style: TextStyle(
+                  fontWeight: FontWeight.w700, 
+                  fontSize: 14,
+                  color: textThemeColor,
+                ),
+              ),
               const SizedBox(height: 2),
-              Text(subtitle, style: const TextStyle(color: AppColors.slate400, fontSize: 13)),
+              Text(subtitle, style: const TextStyle(color: AppColors.slate500, fontSize: 13)),
             ],
           ),
         ],
@@ -789,6 +838,9 @@ class _InviteSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     const appLink = 'https://splitsmart.app/invite';
     const message = 'Hey! I\'m using SplitSmart to split bills easily. Join me: $appLink';
+    final primaryColor = Theme.of(context).colorScheme.primary;
+    final onPrimaryColor = Theme.of(context).colorScheme.onPrimary;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -798,16 +850,17 @@ class _InviteSheet extends StatelessWidget {
           width: 36,
           height: 4,
           decoration: BoxDecoration(
-            color: AppColors.slate700,
+            color: AppColors.slate500.withValues(alpha: 0.3),
             borderRadius: BorderRadius.circular(2),
           ),
         ),
         const SizedBox(height: 20),
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20),
-          child: Text(
-            'Invite to SplitSmart',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+        Text(
+          'Invite to SplitSmart',
+          style: TextStyle(
+            fontSize: 18, 
+            fontWeight: FontWeight.w800,
+            color: isDark ? Colors.white : AppColors.slate900,
           ),
         ),
         const SizedBox(height: 6),
@@ -815,7 +868,7 @@ class _InviteSheet extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Text(
             'Share a link with $query to join SplitSmart',
-            style: const TextStyle(color: AppColors.slate400, fontSize: 14),
+            style: const TextStyle(color: AppColors.slate500, fontSize: 14),
           ),
         ),
         const SizedBox(height: 24),
@@ -825,18 +878,21 @@ class _InviteSheet extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
-              color: AppColors.backgroundDark,
+              color: isDark ? AppColors.backgroundDark : AppColors.backgroundLight,
               borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: AppColors.primary.withValues(alpha: 0.2)),
+              border: Border.all(color: isDark ? AppColors.borderDark : AppColors.borderLight),
             ),
             child: Row(
               children: [
-                const Icon(Icons.link_rounded, color: AppColors.primary),
+                Icon(Icons.link_rounded, color: primaryColor),
                 const SizedBox(width: 10),
-                const Expanded(
+                Expanded(
                   child: Text(
                     appLink,
-                    style: TextStyle(color: AppColors.slate300, fontSize: 13),
+                    style: TextStyle(
+                      color: isDark ? AppColors.slate300 : AppColors.slate600, 
+                      fontSize: 13,
+                    ),
                   ),
                 ),
                 TextButton(
@@ -854,9 +910,9 @@ class _InviteSheet extends StatelessWidget {
                     padding: EdgeInsets.zero,
                     minimumSize: Size.zero,
                   ),
-                  child: const Text(
+                  child: Text(
                     'Copy',
-                    style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.w700),
+                    style: TextStyle(color: primaryColor, fontWeight: FontWeight.w700),
                   ),
                 ),
               ],
@@ -884,8 +940,8 @@ class _InviteSheet extends StatelessWidget {
               icon: const Icon(Icons.copy_rounded, size: 18),
               label: const Text('Copy Invite Message', style: TextStyle(fontWeight: FontWeight.w700)),
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                foregroundColor: Colors.black87,
+                backgroundColor: primaryColor,
+                foregroundColor: onPrimaryColor,
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
@@ -909,27 +965,31 @@ class _ModeTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final primaryColor = Theme.of(context).colorScheme.primary;
+    final onPrimaryColor = Theme.of(context).colorScheme.onPrimary;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: selected ? AppColors.primary : const Color(0xFF1A2E2C),
+          color: selected ? primaryColor : Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: selected ? AppColors.primary : AppColors.primary.withValues(alpha: 0.2),
+            color: selected ? primaryColor : (isDark ? AppColors.borderDark : AppColors.borderLight),
           ),
         ),
         child: Row(mainAxisSize: MainAxisSize.min, children: [
-          Icon(icon, size: 14, color: selected ? Colors.black87 : AppColors.slate400),
+          Icon(icon, size: 14, color: selected ? onPrimaryColor : AppColors.slate500),
           const SizedBox(width: 6),
           Text(
             label,
             style: TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w700,
-              color: selected ? Colors.black87 : AppColors.slate400,
+              color: selected ? onPrimaryColor : AppColors.slate500,
             ),
           ),
         ]),

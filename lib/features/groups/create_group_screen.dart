@@ -76,17 +76,23 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final primaryColor = Theme.of(context).colorScheme.primary;
+    final onPrimaryColor = Theme.of(context).colorScheme.onPrimary;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardBorderColor = isDark ? AppColors.borderDark : AppColors.borderLight;
+    final inputColor = isDark ? Colors.white : AppColors.slate900;
+
     return Scaffold(
-      backgroundColor: AppColors.backgroundDark,
       appBar: AppBar(
-        backgroundColor: AppColors.backgroundDark,
-        leading: IconButton(icon: const Icon(Icons.arrow_back_rounded), onPressed: () => context.pop()),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios_new_rounded, size: 20, color: isDark ? Colors.white : AppColors.slate900), 
+          onPressed: () => context.pop(),
+        ),
         title: const Text('Create Group'),
-        surfaceTintColor: Colors.transparent,
       ),
       body: ListView(padding: const EdgeInsets.all(20), children: [
         // Group Icon Picker
-        const Text('Group Icon', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: AppColors.slate300)),
+        const Text('Group Icon', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: AppColors.slate500)),
         const SizedBox(height: 12),
         SizedBox(
           height: 70,
@@ -103,11 +109,11 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                   duration: const Duration(milliseconds: 200),
                   width: 60, height: 60,
                   decoration: BoxDecoration(
-                    color: isSelected ? AppColors.primary.withValues(alpha: 0.2) : const Color(0xFF1A2E2C),
+                    color: isSelected ? primaryColor.withValues(alpha: 0.15) : Theme.of(context).colorScheme.surface,
                     borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: isSelected ? AppColors.primary : AppColors.primary.withValues(alpha: 0.15), width: isSelected ? 2 : 1),
+                    border: Border.all(color: isSelected ? primaryColor : cardBorderColor, width: isSelected ? 2 : 1),
                   ),
-                  child: Icon(_iconData[ic], color: isSelected ? AppColors.primary : AppColors.slate500, size: 26),
+                  child: Icon(_iconData[ic], color: isSelected ? primaryColor : AppColors.slate500, size: 26),
                 ),
               );
             },
@@ -115,31 +121,64 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
         ),
         const SizedBox(height: 24),
         // Group Name
-        const Text('Group Name', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: AppColors.slate300)),
+        const Text('Group Name', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: AppColors.slate500)),
         const SizedBox(height: 8),
         TextField(
           controller: _name,
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
-          decoration: const InputDecoration(hintText: 'e.g. Trip to Goa, Flatmates', prefixIcon: Icon(Icons.group_rounded, color: AppColors.slate500)),
+          style: TextStyle(color: inputColor, fontWeight: FontWeight.w600, fontSize: 15),
+          decoration: InputDecoration(
+            hintText: 'e.g. Trip to Goa, Flatmates', 
+            prefixIcon: const Icon(Icons.group_rounded, color: AppColors.slate500),
+            fillColor: isDark ? AppColors.surfaceDark : AppColors.slate100.withValues(alpha: 0.5),
+            filled: true,
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: cardBorderColor),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: primaryColor, width: 2),
+            ),
+          ),
         ),
         const SizedBox(height: 24),
         // Add Members
-        const Text('Add Members', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: AppColors.slate300)),
+        const Text('Add Members', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: AppColors.slate500)),
         const SizedBox(height: 8),
         Row(children: [
           Expanded(
             child: TextField(
               controller: _emailCtrl,
               keyboardType: TextInputType.emailAddress,
-              style: const TextStyle(color: Colors.white),
-              decoration: const InputDecoration(hintText: 'Enter email address', prefixIcon: Icon(Icons.email_outlined, color: AppColors.slate500)),
+              style: TextStyle(color: inputColor, fontSize: 15, fontWeight: FontWeight.w600),
+              decoration: InputDecoration(
+                hintText: 'Enter email address', 
+                prefixIcon: const Icon(Icons.email_outlined, color: AppColors.slate500),
+                fillColor: isDark ? AppColors.surfaceDark : AppColors.slate100.withValues(alpha: 0.5),
+                filled: true,
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: cardBorderColor),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: primaryColor, width: 2),
+                ),
+              ),
             ),
           ),
           const SizedBox(width: 10),
           ElevatedButton(
             onPressed: _loading ? null : _addMember,
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary, foregroundColor: AppColors.backgroundDark, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)), padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15)),
-            child: _loading ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.backgroundDark)) : const Text('Add', style: TextStyle(fontWeight: FontWeight.w700)),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: primaryColor, 
+              foregroundColor: onPrimaryColor, 
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)), 
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
+            ),
+            child: _loading 
+                ? SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: onPrimaryColor)) 
+                : const Text('Add', style: TextStyle(fontWeight: FontWeight.w700)),
           ),
         ]),
         // Member chips
@@ -148,10 +187,10 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
           Wrap(spacing: 8, runSpacing: 8, children: [
             for (int i = 0; i < _memberNames.length; i++)
               Chip(
-                backgroundColor: AppColors.primary.withValues(alpha: 0.15),
-                side: BorderSide(color: AppColors.primary.withValues(alpha: 0.3)),
-                label: Text(_memberNames[i], style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.w600)),
-                deleteIcon: const Icon(Icons.close, size: 16, color: AppColors.primary),
+                backgroundColor: primaryColor.withValues(alpha: 0.15),
+                side: BorderSide(color: primaryColor.withValues(alpha: 0.3)),
+                label: Text(_memberNames[i], style: TextStyle(color: primaryColor, fontWeight: FontWeight.w600)),
+                deleteIcon: Icon(Icons.close, size: 16, color: primaryColor),
                 onDeleted: () => setState(() { _memberIds.removeAt(i); _memberNames.removeAt(i); }),
               ),
           ]),
